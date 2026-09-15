@@ -131,7 +131,7 @@ export default function Home() {
             <h3>BOXING PROFILE</h3>
             <div className="three">
               <label>Weight (lb) *<input name="weight" type="number" required /></label>
-              <label>Height<input name="height" placeholder={'5\\'10"'} /></label>
+              <label>Height<input name="height" placeholder="5 ft 10 in" /></label>
               <label>Stance<select name="stance"><option>Orthodox</option><option>Southpaw</option><option>Switch</option></select></label>
             </div>
             <div className="two">
