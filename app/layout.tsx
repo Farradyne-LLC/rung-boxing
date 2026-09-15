@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Punch Mentality — Controlled Sparring. Real Footage.",
-  description: "Coach-supervised sparring, professional footage, and a permanent boxing portfolio for serious recreational and amateur boxers in Los Angeles."
+  title: "Punch Mentality — Real Rounds. Real Footage. Real Progress.",
+  description:
+    "Los Angeles coach-supervised sparring network and digital fighter portfolio for recreational, amateur and professional boxers.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
