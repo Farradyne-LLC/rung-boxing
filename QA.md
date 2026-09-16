@@ -9,5 +9,7 @@
 - Privacy: one clip consent keeps sharing disabled; two enable it; full session stays private independently.
 - Profile: Southpaw filter leaves the matching sample session.
 - Responsive: mobile homepage/profile at 390px viewport have no horizontal overflow; mobile menu opens and navigates.
+- Deployed preview: homepage loaded with all observed images and no console errors. Session media tabs, three stills, coach request submit/edit with field retention and mobile request route verified. Session, coach and request screens showed no horizontal overflow at 390px viewport.
+- Corrected the mobile request heading line break after deployed visual inspection.
 
 This record covers a UI prototype. No live application, email, payment, real verification or publication was tested or claimed.
