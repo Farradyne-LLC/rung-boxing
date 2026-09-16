@@ -1,0 +1,8 @@
+import Image from 'next/image';
+import Link from 'next/link';
+export function Photo({name, alt, className = '', priority = false}: {name: string; alt: string; className?: string; priority?: boolean}) {return <div className={`photo ${className}`}><Image src={`/images/${name}.webp`} alt={alt} fill sizes="(max-width: 760px) 100vw, 65vw" priority={priority}/></div>;}
+export function Label({children}: {children: React.ReactNode}) { return <div className="eyebrow">{children}</div>; }
+export function Button({href, children, secondary = false}: {href: string; children: React.ReactNode; secondary?: boolean}) {return <Link href={href} className={`button ${secondary ? 'secondary' : ''}`}>{children}<span aria-hidden="true">↗</span></Link>;}
+export function DemoNote(){return <div className="demo-note"><span className="dot"/> PRODUCT PREVIEW <span>Sample identities, activity and generated imagery. Actions are simulated; nothing is booked or published.</span></div>;}
+export function PageTitle({label, title, children}: {label: string; title: string; children?: React.ReactNode}) {return <div className="page-title"><Label>{label}</Label><h1>{title}</h1>{children && <p>{children}</p>}</div>;}
+export function Footer(){return <footer className="footer"><div className="shell"><div className="footer-top"><Link href="/" className="wordmark">PUNCH<br/>MENTALITY<span className="brand-dot">®</span></Link><p>Real Rounds. Real Footage. Real Progress.</p><Link href="/request">Request rounds ↗</Link></div><div className="footer-bottom"><span>LOS ANGELES · EST. 2026</span><span>PRODUCT PROTOTYPE V2 · 18+</span><Link href="/session#privacy">Privacy & consent</Link></div></div></footer>;}
