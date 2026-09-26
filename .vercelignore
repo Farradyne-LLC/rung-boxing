@@ -1,0 +1,9 @@
+.git
+node_modules
+.next
+test-results
+playwright-report
+qa-*.png
+tests
+playwright.config.ts
+docs
