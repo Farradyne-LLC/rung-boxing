@@ -65,7 +65,7 @@ test("home, assets, navigation, FAQ and updates preview", async ({ page }) => {
   );
   expect(errors).toEqual([]);
 });
-test("adult application, validation, back navigation and explicit content consent", async ({
+test("adult application, visibility and mandatory unified terms", async ({
   page,
 }) => {
   let externalPosts = 0;
@@ -79,19 +79,25 @@ test("adult application, validation, back navigation and explicit content consen
   await boxing(page);
   await expect(page.locator("[name=contentInterest][value=Yes]")).toBeChecked();
   await expect(page.locator("[name=visibility][value=Public]")).toBeChecked();
-  await expect(page.locator("[name=profileConsent]")).not.toBeChecked();
-  await page.locator("[name=profileConsent]").check();
-  await page.locator("[name=socialConsent]").check();
+  await expect(page.locator("input[type=checkbox]")).toHaveCount(0);
   await page.locator("[name=visibility][value=Private]").check();
-  await expect(page.locator("[name=profileConsent]")).not.toBeChecked();
-  await expect(page.locator("[name=socialConsent]")).toBeDisabled();
+  await expect(page.locator("input[type=checkbox]")).toHaveCount(0);
   await page.getByRole("button", { name: "BACK", exact: true }).click();
   await expect(page.locator("[name=weight]")).toHaveValue("175");
   await page.getByRole("button", { name: "CONTINUE" }).click();
   await page.getByRole("button", { name: "CONTINUE" }).click();
   await expect(page.locator(".review-list")).toContainText("Private");
-  await page.locator("[name=reviewAcknowledged]").check();
-  await page.locator("[name=rulesAcknowledged]").check();
+  await page
+    .locator(".application-form")
+    .screenshot({
+      path: `qa-unified-review-${page.viewportSize()?.width}.png`,
+    });
+  await expect(
+    page.locator(".application-form input[type=checkbox]"),
+  ).toHaveCount(1);
+  await page.getByRole("button", { name: "FINISH PREVIEW" }).click();
+  await expect(page.locator("[name=termsAccepted]")).toBeVisible();
+  await page.locator("[name=termsAccepted]").check();
   await page.getByRole("button", { name: "FINISH PREVIEW" }).click();
   await expect(page.getByText("PREVIEW COMPLETE · NOTHING SENT")).toBeVisible();
   await expect(page.getByText("Example next status: Applied")).toBeVisible();
@@ -107,13 +113,17 @@ test("youth stays private and requires individual review", async ({ page }) => {
   await boxing(page);
   await expect(page.locator("[name=visibility][value=Private]")).toBeChecked();
   await expect(page.locator("[name=visibility][value=Public]")).toBeDisabled();
-  await expect(page.locator("[name=websiteConsent]")).toBeDisabled();
+  await expect(page.locator("input[type=checkbox]")).toHaveCount(0);
   await page.getByRole("button", { name: "CONTINUE" }).click();
   await expect(page.locator(".review-list")).toContainText(
     "Requires Individual Review",
   );
-  await page.locator("[name=reviewAcknowledged]").check();
-  await page.locator("[name=rulesAcknowledged]").check();
+  await expect(
+    page.locator(".application-form input[type=checkbox]"),
+  ).toHaveCount(1);
+  await page.getByRole("button", { name: "FINISH PREVIEW" }).click();
+  await expect(page.locator("[name=termsAccepted]")).toBeVisible();
+  await page.locator("[name=termsAccepted]").check();
   await page.getByRole("button", { name: "FINISH PREVIEW" }).click();
   await expect(
     page.getByText("Example next status: Requires Individual Review"),
@@ -131,6 +141,20 @@ test("review, check-in and publishing rules", async ({ page }) => {
   await checkin.click();
   await page.getByRole("button", { name: "MARK COMPLETE" }).click();
   await expect(page.getByRole("status").last()).toContainText("Completed");
+  await page
+    .getByLabel("Both adult fighters accepted", { exact: false })
+    .check();
+  await expect(page.getByText("Publication blocked")).toBeVisible();
+  await page
+    .getByRole("combobox", { name: "Pair visibility", exact: true })
+    .selectOption("Public / Public");
+  await expect(page.getByText("Publication blocked")).toBeVisible();
+  await page
+    .getByLabel("Both adult fighters accepted", { exact: false })
+    .check();
+  await expect(
+    page.getByText("Eligible for publication review — example only"),
+  ).toBeVisible();
   await page.getByLabel("Explore an under-18 application").check();
   await expect(
     page.getByRole("button", { name: "Confirmed", exact: true }),

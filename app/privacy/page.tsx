@@ -18,14 +18,18 @@ export default function Page() {
       <h2>PUBLIC AND PRIVATE</h2>
       <p>
         Adult applicants initially see Public selected. They can choose Private.
-        Public is a visibility preference, not a publication release. Separate
-        permissions are needed for approved profile information and each use of
-        footage.
+        A completed application and fighter profile are required for everyone.
+        Recording, ownership and use of content are covered by one acceptance of
+        the Terms of Participation &amp; Content. Public allows the public uses
+        described there; Private restricts publication without changing the
+        content ownership model.
       </p>
       <p>
         Private profiles and footage are excluded from public pages. Under-18
-        profiles remain private. Shared footage needs appropriate permission
-        from both participants.
+        profiles remain private. Shared identifiable footage stays unpublished
+        if either participant is Private. Both participants must have accepted
+        the applicable Terms before a Public / Public pair can be considered for
+        publication.
       </p>
       <h2>BEFORE LIVE REGISTRATION</h2>
       <p>

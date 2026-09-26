@@ -1,13 +1,5 @@
 export type ApplicationData = Record<string, string | boolean>;
-export const consentVersion = "v3-preview-2026-09-25";
-export const publicationKeys = [
-  "profileConsent",
-  "websiteConsent",
-  "socialConsent",
-  "youtubeConsent",
-  "advertisingConsent",
-  "gymConsent",
-];
+export const consentVersion = "v3-unified-terms-preview-2026-09-26";
 export function ageFromDob(dob: string, now = new Date()): number | null {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) return null;
   const [y, m, d] = dob.split("-").map(Number);
@@ -34,8 +26,6 @@ export function normalizeApplication(
   const result = { ...data };
   const age = ageFromDob(String(data.dob || ""), now);
   if (age !== null && age < 18) result.visibility = "Private";
-  if (result.visibility === "Private")
-    publicationKeys.forEach((k) => (result[k] = false));
   return result;
 }
 export function reviewStatus(data: ApplicationData, now = new Date()) {
@@ -63,7 +53,7 @@ export function validateStep(
       "intensity",
     ],
     [],
-    ["reviewAcknowledged", "rulesAcknowledged"],
+    ["termsAccepted"],
   ][step];
   if (
     required?.some((key) =>

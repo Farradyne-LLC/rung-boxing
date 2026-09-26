@@ -217,19 +217,19 @@ export default function ReviewDemo() {
                 onChange={(e) => setApproved(e.target.checked)}
               />
               <span>
-                Separate, relevant publication permission confirmed for both
-                adult fighters in this example.
+                Both adult fighters accepted the applicable Terms of
+                Participation & Content in this example.
               </span>
             </label>
             <div className="notice">
               <strong>
-                {approved
+                {approved && pair === "Public / Public" && !youth
                   ? "Eligible for publication review — example only"
                   : "Publication blocked"}
               </strong>
-              {approved
-                ? "A reviewer still verifies the specific material and permissions before publishing. Nothing is published from this demo."
-                : "Public preference does not grant permission. Shared footage stays unpublished without the necessary consent from both participants."}
+              {approved && pair === "Public / Public" && !youth
+                ? "Terms accepted and both fighters Public. A reviewer checks the material before publishing. Nothing is published from this demo."
+                : "Both adult fighters must accept the Terms and choose Public. Any Private participant or pending youth procedure blocks publication."}
             </div>
             <Link href="/sessions/demo/rounds/sample" className="text-link">
               VIEW COMPLETED SESSION LAYOUT <Arrow />

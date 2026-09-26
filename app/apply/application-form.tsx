@@ -11,40 +11,6 @@ import {
   type ApplicationData,
 } from "../lib/application";
 
-const consents = [
-  ["recordingConsent", "Recording", "Allow the session to be recorded."],
-  ["editingConsent", "Editing", "Allow editing into your personal content."],
-  [
-    "profileConsent",
-    "Website profile",
-    "Allow approved profile information to appear publicly.",
-  ],
-  [
-    "websiteConsent",
-    "Website footage",
-    "Allow approved session content on the Punch Mentality website.",
-  ],
-  [
-    "socialConsent",
-    "Social media",
-    "Allow approved content on Punch Mentality social channels.",
-  ],
-  [
-    "youtubeConsent",
-    "YouTube",
-    "Allow approved content on the Punch Mentality YouTube channel.",
-  ],
-  [
-    "advertisingConsent",
-    "Punch Mentality advertising",
-    "Allow approved content to be used in advertising.",
-  ],
-  [
-    "gymConsent",
-    "Partner gym use",
-    "Allow use by the relevant gym, subject to separately confirmed details.",
-  ],
-];
 const gear = [
   ["headgear", "Headgear"],
   ["mouthguard", "Mouthguard"],
@@ -217,7 +183,7 @@ export default function ApplicationForm({
           </li>
         </ol>
         <p className="fine">
-          Demo consent version: {consentVersion}
+          Demo terms version: {consentVersion}
           <br />
           Demonstration timestamp: {timestamp}
           <br />
@@ -450,47 +416,32 @@ export default function ApplicationForm({
                     <b>{value}</b>
                     <span>
                       {value === "Public"
-                        ? "Approved information and content may be published with separate permissions."
-                        : "Excluded from public pages and promotion unless separately approved."}
+                        ? "Your profile and session content may appear on our website, social channels, YouTube and advertising under the Terms."
+                        : "Your profile and footage stay off public pages, social channels and advertising. Recording and content ownership still follow the Terms."}
                     </span>
                   </div>
                 </label>
               ))}
             </div>
           </fieldset>
-          <div className="notice">
-            <strong>
-              {youth
-                ? "Youth profiles stay private."
-                : "Visibility is not publication consent."}
-            </strong>
-            {youth
-              ? "Public options are unavailable until an approved guardian procedure is in place."
-              : "Public is initially selected for adults. Change it at any time before finishing. Nothing is published automatically."}
-          </div>
-          <h3 className="form-heading">SEPARATE CONTENT PERMISSIONS</h3>
           <p className="field-help">
-            All boxes start unchecked. These are demonstration choices, not a
-            signed release. Final agreements will be reviewed before launch.
+            A fighter profile is part of every application. Public / Private
+            controls visibility, not whether a profile is created or who owns
+            Punch Mentality-produced content.
           </p>
-          {consents.map(([key, label, hint], i) => (
-            <label className="check" key={key}>
-              <input
-                type="checkbox"
-                name={key}
-                checked={!!normalized[key]}
-                disabled={i >= 2 && normalized.visibility === "Private"}
-                onChange={(e) => update(key, e.target.checked)}
-              />
-              <span>
-                {label}
-                <small>{hint}</small>
-              </span>
-            </label>
-          ))}
+          {youth && (
+            <div className="notice">
+              <strong>Youth profiles stay private.</strong>Individual review and
+              a separate guardian procedure are required before participation.
+            </div>
+          )}
           <p className="field-help">
-            Shared footage needs the relevant permissions from both fighters.
-            Choosing Public never overrides a partner’s Private preference.
+            Recording, editing, content ownership and permitted uses are covered
+            together in the{" "}
+            <Link href="/terms" target="_blank">
+              Terms of Participation &amp; Content
+            </Link>
+            . You accept them once at the final step.
           </p>
         </>
       )}
@@ -513,14 +464,6 @@ export default function ApplicationForm({
               </div>
             ))}
           </dl>
-          <h3>CONTENT CHOICES</h3>
-          <ul className="review-consents">
-            {consents.map(([key, label]) => (
-              <li key={key}>
-                {label}: {normalized[key] ? "Selected" : "Not selected"}
-              </li>
-            ))}
-          </ul>
           <div className="notice">
             <strong>Equipment check</strong>
             {gear.filter(([key]) => !data[key]).length
@@ -531,39 +474,31 @@ export default function ApplicationForm({
               : "All listed equipment confirmed for this preview."}{" "}
             Final gear and weight checks happen on site.
           </div>
+          <p className="field-help">
+            Every application includes a fighter profile. Participation still
+            requires review, a suitable partner and coach approval.
+          </p>
           <label className="check">
             <input
-              name="reviewAcknowledged"
+              name="termsAccepted"
               type="checkbox"
-              checked={!!data.reviewAcknowledged}
-              onChange={(e) => update("reviewAcknowledged", e.target.checked)}
+              checked={!!data.termsAccepted}
+              onChange={(e) => update("termsAccepted", e.target.checked)}
               required
             />
             <span>
-              I understand a live application would require human review, a
-              suitable pairing and final coach approval. *
-            </span>
-          </label>
-          <label className="check">
-            <input
-              name="rulesAcknowledged"
-              type="checkbox"
-              checked={!!data.rulesAcknowledged}
-              onChange={(e) => update("rulesAcknowledged", e.target.checked)}
-              required
-            />
-            <span>
-              I have reviewed the{" "}
+              I agree to the{" "}
               <Link href="/terms" target="_blank">
-                participation overview
-              </Link>{" "}
-              and{" "}
-              <Link href="/content-consent" target="_blank">
-                content choices
+                Terms of Participation &amp; Content
               </Link>
-              . This preview does not sign a waiver or submit an application. *
+              , including recording, editing, Punch Mentality’s content
+              ownership and use under my selected Public / Private setting. *
             </span>
           </label>
+          <p className="field-help">
+            Acceptance is required to register. This preview does not submit an
+            application or sign an agreement.
+          </p>{" "}
           <p className="fine">
             No newsletter subscription is included. Your data stays in this
             page’s memory only.

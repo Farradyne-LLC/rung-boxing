@@ -79,8 +79,8 @@ export default async function RoundPage({
                 <h2>YOUR HIGHLIGHT</h2>
                 <p>
                   A personal edit is part of the optional content package.
-                  Public sharing requires the relevant permissions from both
-                  fighters.
+                  Public sharing requires accepted Terms and Public visibility
+                  for both fighters.
                 </p>
                 <button className="button outline" disabled>
                   HIGHLIGHT NOT AVAILABLE

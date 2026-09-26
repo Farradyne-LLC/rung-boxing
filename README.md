@@ -1,6 +1,6 @@
 # Punch Mentality V3
 
-Responsive, interactive **preview** of the V3 fighter experience. Built by evolving the existing Next.js site; see [the approved specification](docs/V3-SPEC.md) and [implementation / launch boundaries](docs/IMPLEMENTATION.md).
+Responsive, interactive **preview** of the V3 fighter experience. Built by evolving the existing Next.js site; see [the approved specification](docs/V3-SPEC.md), [September 26 updates](docs/SEPTEMBER-26-AMENDMENT.md) and [implementation / launch boundaries](docs/IMPLEMENTATION.md).
 
 ## Run locally
 

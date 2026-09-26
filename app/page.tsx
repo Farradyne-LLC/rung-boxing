@@ -1,4 +1,4 @@
-import Image from "next/image";
+import HeroBackground from "./components/hero-background";
 import Link from "next/link";
 import {
   Arrow,
@@ -13,15 +13,7 @@ export default function Home() {
   return (
     <>
       <section className="hero" id="top">
-        <div className="hero-photo">
-          <Image
-            src="/images/sparring-hero.png"
-            alt="Brand illustration: two adult boxers in red and blue headgear practicing controlled sparring"
-            fill
-            priority
-            sizes="100vw"
-          />
-        </div>
+        <HeroBackground />
         <div className="hero-shade" />
         <div className="shell hero-inner">
           <div className="hero-kicker mono">
@@ -101,8 +93,8 @@ export default function Home() {
             <p>
               You put in the work. Make it count.
               <br />
-              Show up for the sparring. Add the footage
-              <br className="desktop-only" /> and portfolio if you want them.
+              Every application includes a fighter profile.
+              <br className="desktop-only" /> Add the footage if you want it.
             </p>
           </div>
           <div className="value-grid">
@@ -131,7 +123,7 @@ export default function Home() {
               [
                 "04",
                 "BUILD A PROFILE.",
-                "INCLUDED WITH CONTENT",
+                "PROFILE WITH EVERY APPLICATION",
                 "Your sessions and approved footage, together in a growing fighter portfolio.",
                 "▣",
               ],
@@ -248,7 +240,7 @@ export default function Home() {
             <ul className="clean-list">
               <li>Sessions and recorded rounds</li>
               <li>Full footage and personal highlights</li>
-              <li>Clear visibility and publication choices</li>
+              <li>A simple Public / Private choice</li>
             </ul>
             <Link href="/fighters/demo" className="button black">
               EXPLORE SAMPLE PROFILE <Arrow />
@@ -352,8 +344,9 @@ export default function Home() {
             <article>
               <h3>YOUR VISIBILITY. YOUR CHOICE.</h3>
               <p>
-                Public or private, with separate publication permissions. Shared
-                footage needs permission from both fighters.
+                One agreement. Public or Private visibility. Your profile is
+                part of registration; private footage stays out of public
+                channels.
               </p>
             </article>
           </div>

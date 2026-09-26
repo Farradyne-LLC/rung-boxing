@@ -101,7 +101,7 @@ export const faqItems = [
   ],
   [
     "Will my profile and footage be public?",
-    "Adults initially see Public selected and can choose Private. This preference is not publication consent. Permissions for your profile, website footage, social media, YouTube and advertising are separate. Shared footage is not published without the required permissions from both fighters.",
+    "Every registration includes a fighter profile. Adults choose Public or Private and accept one set of Terms covering recording, editing, content ownership and use. Public allows the uses described in the Terms, including website, social media, YouTube and advertising. Private keeps your identifiable profile and footage off public channels. Shared footage stays unpublished if either fighter is Private.",
   ],
   [
     "Where and when are the next rounds?",

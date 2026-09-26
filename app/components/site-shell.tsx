@@ -92,8 +92,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
             <span>© {new Date().getFullYear()} PUNCH MENTALITY</span>
             <div>
               <Link href="/privacy">Privacy</Link>
-              <Link href="/terms">Participation terms</Link>
-              <Link href="/content-consent">Content consent</Link>
+              <Link href="/terms">Terms of Participation & Content</Link>
             </div>
             <span>NO SCORECARDS. JUST WORK.</span>
           </div>

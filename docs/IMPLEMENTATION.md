@@ -11,7 +11,7 @@ Forms are deliberately **preview-only**. They validate and allow a complete walk
 
 All user-entered form data stays in React memory. No localStorage, cookies, database, analytics payloads or external form endpoints are used. Runtime hosting logs are outside this application behavior.
 
-Public preference starts selected for adults. Publication consent boxes start unchecked. Selecting Private clears and disables publication selections. Under-18 dates force Private and the individual-review route. Recording and editing are separate from publication. Demo youth confirmation is blocked.
+September 26 amendment: every registration requires a fighter application/profile and one initially unchecked acceptance of the Terms of Participation & Content. The Terms consolidate recording, editing, production ownership, publication and advertising. Public/Private controls visibility only. Private blocks public uses, including advertising, without changing ownership. Under-18 dates force Private and individual review. Adult acceptance does not replace guardian authorization. This preview signs no agreement.
 
 The public review route uses invented, anonymous scenarios only; it is not an admin interface or a substitute for server authorization. Demo Private toggles contain no real private data and are not an access-control system.
 
@@ -25,7 +25,7 @@ Profiles have no invented achievements. Unknown profile, event and pair identifi
 - `/sessions/next`: unconfirmed next-event information
 - `/sessions/demo/rounds/sample`: completed pair-session template
 - `/preview/review`: application, attendance, delivery and consent-state demonstration
-- `/privacy`, `/terms`, `/content-consent`: clearly marked draft product overviews, not final legal agreements
+- `/privacy`, `/terms`: privacy overview and consolidated draft Terms; `/content-consent` redirects to the Terms
 
 All routes carry noindex/nofollow metadata while the project remains a preview.
 
@@ -38,7 +38,7 @@ All routes carry noindex/nofollow metadata while the project remains a preview.
 5. Connect durable submission storage. Only return a live success after the write is acknowledged; preserve fields on failure. Add server validation, abuse protection, consent timestamps/versioning, idempotency and separate newsletter enrollment.
 6. Provide authenticated organizer access with authorized status transitions. Keep application, attendance and content-delivery records separate.
 7. Establish private-media delivery with authenticated authorization and protected storage. Never place private footage in `/public` or rely on unlisted URLs as access control.
-8. Store scoped consent per participant and verify both fighters for each shared publication. Establish change/removal handling before publishing.
+8. Store each participant's accepted Terms version, timestamp and visibility. Shared content requires both adults to have accepted and selected Public. Private blocks publication even after acceptance. Secure production contributor rights separately and establish change/removal handling before publishing.
 9. Add privacy-conscious conversion events that never include form contents; measure actual return participation from attendance records.
 10. Enable live registration only after those launch dependencies are ready; remove preview labeling/noindex at that time.
 
