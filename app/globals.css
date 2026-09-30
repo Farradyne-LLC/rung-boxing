@@ -169,6 +169,8 @@ img {
 .brand {
   position: relative;
   display: block;
+  /* Let the logo's black matte disappear into either dark site surface. */
+  mix-blend-mode: screen;
   width: 218px;
   height: 70px;
   overflow: hidden;
