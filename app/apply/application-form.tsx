@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, type FormEvent } from "react";
 import Link from "next/link";
+import {useApplicationDraft} from "../lib/use-application-draft";
 import { Arrow } from "../components/ui";
 import {
   ageFromDob,
@@ -37,6 +38,7 @@ export default function ApplicationForm({
   const [timestamp, setTimestamp] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
+  const draft = useApplicationDraft('punch-application-preview-v1', data, step, done, (saved, savedStep) => {setData(old => ({...old, ...saved}));setStep(savedStep);}, 3);
   const age = ageFromDob(String(data.dob || ""));
   const youth = age !== null && age < 18;
   const normalized = normalizeApplication(data);
@@ -138,7 +140,7 @@ export default function ApplicationForm({
           THE FIRST ROUND.
         </h2>
         <p>
-          This was a demonstration. Your details were not saved, sent to an
+          This was a demonstration. Your details were not sent to an
           organizer or used to create a profile.
         </p>
         <div className="notice">
@@ -206,8 +208,10 @@ export default function ApplicationForm({
         </div>
       </div>
     );
+  if (!draft.ready) return <p role="status">Loading your application…</p>;
   return (
     <form ref={formRef} className="application-form" onSubmit={submit}>
+      <p role="status">{draft.unavailable ? 'This browser cannot save a draft. Keep this tab open until you finish.' : draft.restored ? 'Your draft has been restored. Continue where you left off.' : 'Your draft is saved in this tab for up to 24 hours, including after a page reload.'}</p>
       <ol className="form-progress" aria-label="Application steps">
         {["ABOUT YOU", "YOUR BOXING", "PREFERENCES", "REVIEW"].map(
           (name, i) => (
@@ -234,7 +238,7 @@ export default function ApplicationForm({
         }
       </h2>
       <p>
-        Preview application. Use sample details — nothing is sent or saved.
+        Preview application. Use sample details — nothing is sent to our team.
         Required fields are marked *.
       </p>
       {error && (
@@ -500,8 +504,8 @@ export default function ApplicationForm({
             application or sign an agreement.
           </p>{" "}
           <p className="fine">
-            No newsletter subscription is included. Your data stays in this
-            page’s memory only.
+            No newsletter subscription is included. Your draft stays in this
+            tab for up to 24 hours.
           </p>
         </>
       )}

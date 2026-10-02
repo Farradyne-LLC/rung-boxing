@@ -204,3 +204,36 @@ test("profile states, empty media, routes and no overflow", async ({
   expect((await request.get("/fighters/not-public")).status()).toBe(404);
   expect((await request.get("/sessions/not-real")).status()).toBe(404);
 });
+
+test('draft survives Public/Private changes, reload and navigation', async ({page}) => {
+  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.goto('/apply');await personal(page);await boxing(page);
+  await page.locator('[name=visibility][value=Private]').check();
+  await page.reload();
+  await expect(page.locator('[name=visibility][value=Private]')).toBeChecked();
+  await expect(page.getByRole('status')).toContainText('restored');
+  await page.getByRole('button',{name:'BACK',exact:true}).click();
+  await expect(page.locator('[name=weight]')).toHaveValue('175');
+  await page.getByRole('button',{name:'BACK',exact:true}).click();
+  await expect(page.locator('[name=fullName]')).toHaveValue('Demo Boxer');
+  await page.getByRole('button',{name:'CONTINUE',exact:true}).click();
+  await page.getByRole('button',{name:'CONTINUE',exact:true}).click();
+  await page.locator('[name=visibility][value=Public]').check();
+  await page.goto('/privacy');await page.goto('/apply');
+  await expect(page.locator('[name=visibility][value=Public]')).toBeChecked();
+  await page.getByRole('button',{name:'CONTINUE',exact:true}).click();
+  await page.locator('[name=termsAccepted]').check();
+  await page.getByRole('button',{name:'FINISH PREVIEW'}).click();
+  await expect(page.getByText('PREVIEW COMPLETE · NOTHING SENT')).toBeVisible();
+  expect(await page.evaluate(()=>sessionStorage.getItem('punch-application-preview-v1'))).toBeNull();
+  expect(errors).toEqual([]);
+});
+
+test('unavailable storage does not crash the form',async({page})=>{
+  await page.addInitScript(()=>{Storage.prototype.setItem=()=>{throw new Error('blocked')};Storage.prototype.getItem=()=>{throw new Error('blocked')};});
+  await page.goto('/apply');await expect(page.getByRole('status')).toContainText('cannot save');
+  await personal(page);await boxing(page);
+  await page.locator('[name=visibility][value=Private]').check();
+  await page.getByRole('button',{name:'CONTINUE',exact:true}).click();
+  await expect(page.locator('.review-list')).toContainText('Private');
+});

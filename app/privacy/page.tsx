@@ -5,10 +5,11 @@ export default function Page() {
     <LegalPage title="PRIVACY OVERVIEW.">
       <h2>IN THIS PREVIEW</h2>
       <p>
-        Application and update-form entries remain only in the current page’s
-        memory. They are not sent to an organizer, stored in a database or saved
-        to browser storage. Leaving or refreshing the page clears them. Use
-        sample information when exploring.
+        Application drafts are saved in session storage in the current browser
+        tab for up to 24 hours and restored after a reload. Completing the preview
+        clears the draft. Update-form entries remain in page memory only.
+        No preview entries are sent to an organizer or stored in our database.
+        Use sample information when exploring.
       </p>
       <p>
         The hosting provider may process ordinary request information to serve
