@@ -45,7 +45,7 @@ export default function HeroBackground() {
       <div className="hero-photo">
         <Image
           src={heroMedia.poster}
-          alt="Brand illustration: two adult boxers in red and blue headgear practicing controlled sparring"
+          alt="Punch Mentality technical sparring inside the Dalakian boxing ring"
           fill
           priority
           sizes="100vw"
@@ -70,6 +70,7 @@ export default function HeroBackground() {
           />
         )}
       </div>
+      <div className="hero-shade" aria-hidden="true" />
       {source && !failed && (
         <button
           type="button"

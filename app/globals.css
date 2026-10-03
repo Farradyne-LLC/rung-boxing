@@ -2221,3 +2221,70 @@ textarea {
     animation: none !important;
   }
 }
+
+/* Editorial pages and authentic Punch photography. */
+.editorial-section { padding: clamp(56px, 8vw, 112px) 0; }
+.editorial-section h2 { font-size: clamp(42px, 6vw, 80px); line-height: .98; margin: 16px 0 28px; }
+.editorial-section h3 { font-size: 30px; }
+.editorial-section p { max-width: 680px; line-height: 1.7; }
+.eyebrow { font: 11px var(--font-mono), monospace; letter-spacing: .12em; }
+.bone-section { background: var(--bone); color: #171717; }
+.steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 28px; margin-top: 48px; }
+.steps-grid article, .pack-inclusions article { border-top: 1px solid #7776; padding: 24px 0; }
+.content-pack-layout,.gym-story { display:grid; grid-template-columns:1fr 1fr; gap:clamp(24px,5vw,80px); align-items:center; }
+.pack-price { font-size:72px; font-weight:800; }
+.pack-price small { display:block; font-size:12px; }
+.philosophy { background: #241116; }
+.final-apply { background:#741c29; }
+.record-list { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+.faq-item { border-bottom:1px solid #7776; padding:24px 0; }
+.faq-item summary { cursor:pointer; font-weight:700; }
+.gym-story img { display:block; width:100%; height:auto; }
+.gym-cover { position:relative; isolation:isolate; min-height:650px; display:flex; align-items:flex-end; }
+.gym-cover > img { object-fit:cover; object-position:center; z-index:-2; }
+.gym-cover::after { content:''; position:absolute; inset:0; z-index:-1; background:linear-gradient(0deg,#101010ef, #10101055 70%); }
+.gym-cover-copy { padding-top:100px; padding-bottom:64px; }
+.gym-cover h1 { font-size:clamp(58px,9vw,120px); line-height:.93; margin:22px 0; }
+.gym-cover .button { margin-top:24px; }
+.gym-photo-grid { display:grid; grid-template-columns:1fr 1fr; gap:40px 24px; }
+.gym-photo-grid figure { margin:0; min-width:0; }
+.gym-photo-grid img { display:block; width:100%; height:auto; }
+.gym-photo-grid figcaption { font-size:12px; letter-spacing:.07em; text-transform:uppercase; padding-top:14px; color:#bcbab1; }
+.training-gallery { margin-top:40px; }
+.training-gallery a { display:block; }
+.hero-photo img,.hero-photo video { object-position:center; }
+@media(max-width:760px) {
+ .gym-story,.content-pack-layout,.record-list { grid-template-columns:1fr; }
+ .steps-grid { grid-template-columns:1fr 1fr; }
+ .gym-photo-grid { gap:28px 16px; }
+ .gym-cover { min-height:580px; }
+ .gym-cover-copy { padding-bottom:40px; }
+ .gym-cover h1 { font-size:clamp(52px,12vw,86px); }
+ .hero h1 { font-size:clamp(42px,11vw,76px); }
+}
+@media(max-width:480px) { .gym-photo-grid,.steps-grid { grid-template-columns:1fr; } }
+/* Show the complete supplied loop, without cropping either video. */
+.hero-photo { inset:0; background:#101010; }
+.hero-photo img,.hero-photo video { object-fit:contain; object-position:center; }
+.hero-video { aspect-ratio:16/9; }
+.form-panel { background:var(--bone); color:#171717; padding:clamp(20px,4vw,40px); color-scheme:light; min-width:0; }
+.form-panel h2 { font-size:clamp(32px,4vw,48px); line-height:1; margin:20px 0; }
+.form-panel input,.form-panel select,.form-panel textarea { background:#f7f6ed; color:#171717; border:1px solid #a6a79b; }
+.form-panel .notice,.form-panel .fine { color:#4c4d43; }
+.form-panel fieldset { border:1px solid #a6a79b; margin:24px 0; padding:20px; }
+.honeypot { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+.workspace { padding-top:56px; padding-bottom:80px; }
+.workspace h1 { font-size:clamp(40px,6vw,72px); }
+.workspace h2 { font-size:36px; margin:30px 0; }
+.workspace section { margin:56px 0; }
+.workspace-title,.workspace-nav,.inline-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:18px; }
+.workspace-nav { justify-content:flex-start; padding:22px 0; border-block:1px solid #777; }
+.filter-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:16px; margin-bottom:28px; }
+.table-scroll { overflow:auto; }
+.table-scroll table { width:100%; border-collapse:collapse; font-size:13px; }
+.table-scroll td,.table-scroll th { text-align:left; padding:14px 10px; border-bottom:1px solid #7776; }
+.table-scroll small { display:block; }
+.admin-form { margin:20px 0; }
+.admin-form label { margin:12px 0; }
+.record-card { padding:28px 0; border-top:1px solid #7776; }
+.narrow { max-width:720px; }

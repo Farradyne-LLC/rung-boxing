@@ -41,7 +41,7 @@ export default function RootLayout({
       className={`${display.variable} ${body.variable} ${mono.variable}`}
     >
       <body>
-        <SiteShell>{children}</SiteShell>
+        <SiteShell live={process.env.APPLICATIONS_OPEN==='true'}>{children}</SiteShell>
       </body>
     </html>
   );

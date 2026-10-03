@@ -1,0 +1,26 @@
+// Exercise real PostgreSQL transactions without retaining synthetic participants.
+const {loadEnvConfig}=require('@next/env');loadEnvConfig(process.cwd());
+const {Client}=require('pg');const fs=require('fs');const assert=require('assert/strict');const {randomUUID}=require('crypto');
+(async()=>{const url=new URL(process.env.POSTGRES_URL_NON_POOLING);url.searchParams.delete('sslmode');const c=new Client({connectionString:url.toString(),ssl:{ca:fs.readFileSync('scripts/supabase-ca.crt','utf8'),rejectUnauthorized:true}});
+try{await c.connect();await c.query('begin');
+ const input={first_name:'QA',last_name:'Test',display_name:'QA',date_of_birth:'1995-04-12',email:'qa@example.com',phone:'2025550123',instagram:'',city:'LA',gym:'QA',height:70,current_weight:175,stance:'Orthodox',years_boxing:3,amateur_fights:0,professional_fights:0,competition_experience:'No fights',sparring_experience:'Weekly rounds',skill_level:'Intermediate',video_url:'',notes:'',emergency_name:'QA',emergency_phone:'2025550123',visibility:'PUBLIC',session_id:'',availability:'Saturday',preferred_intensity:'Technical/light',media_consent:true,rules_accepted:true,accuracy_accepted:true,no_guarantee_accepted:true,recording_accepted:true,terms_version:'QA',guardian_name:'',guardian_contact:''};
+ const request=randomUUID();const submit=async(data,id)=> (await c.query('select public.submit_application($1,$2,$3,$4) id',[data,id,'qa@example.com','https://punchmentality.com'])).rows[0].id;
+ const a=await submit(input,request);assert.equal(await submit(input,request),a);
+ const b=await submit({...input,email:'qa2@example.com'},randomUUID());
+ const s=(await c.query("insert into sessions(title,slug,date,start_time,location_name,city) values('QA',$1,current_date+7,'10:00','QA','LA') returning id",['qa-'+randomUUID()])).rows[0].id;
+ const m=(await c.query('select create_matchup($1,$2,$3,3,180,\'QA\',\'qa-hash-a\',\'qa-hash-b\',\'https://example.com/a\',\'https://example.com/b\',null) id',[a,b,s])).rows[0].id;
+ assert.equal((await c.query("select respond_matchup('qa-hash-a',true) status")).rows[0].status,'AWAITING_CONFIRMATION');
+ assert.equal((await c.query("select respond_matchup('qa-hash-b',true) status")).rows[0].status,'CONFIRMED');
+ const fighter=(await c.query('select fighter_id from applications where id=$1',[a])).rows[0].fighter_id;
+ const order=(await c.query('select * from reserve_order($1,$2)',[m,fighter])).rows[0];
+ assert.equal((await c.query('select * from reserve_order($1,$2)',[m,fighter])).rows[0].id,order.id);
+ await c.query("select record_payment('qa-paid',$1,'qa-checkout','qa-pi','PAID',9900,'usd')",[order.id]);
+ await c.query("select record_payment('qa-late-failure',$1,'qa-checkout','qa-pi','FAILED',9900,'usd')",[order.id]);
+ assert.equal((await c.query('select payment_status from orders where id=$1',[order.id])).rows[0].payment_status,'PAID');
+ await c.query("select manage_matchup($1,'COMPLETE',null)",[m]);await c.query("select manage_matchup($1,'PUBLISH',null)",[m]);
+ assert.equal((await c.query('select published from matchups where id=$1',[m])).rows[0].published,true);
+ await c.query("select subscribe_updates('QA','qa-subscriber@example.com','qa@example.com','https://punchmentality.com')");
+ await c.query("select subscribe_updates('QA','qa-subscriber@example.com','qa@example.com','https://punchmentality.com')");
+ assert.equal(Number((await c.query("select count(*) n from subscribers where email='qa-subscriber@example.com'")).rows[0].n),1);
+ console.log('PASS: application idempotency, matching, both confirmations, order deduplication, payment ordering, completion/publication, subscription deduplication.');
+}catch(e){console.error(e.message);process.exitCode=1;}finally{await c.query('rollback').catch(()=>{});await c.end();console.log('QA transaction rolled back.');}})();

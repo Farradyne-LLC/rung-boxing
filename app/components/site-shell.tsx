@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Arrow } from "./ui";
-export default function SiteShell({ children }: { children: React.ReactNode }) {
+export default function SiteShell({ children, live=false }: { children: React.ReactNode;live?:boolean }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   return (
@@ -12,13 +12,13 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
       <a href="#main" className="skip-link">
         Skip to content
       </a>
-      <div className="preview-bar">
+      {!live&&<div className="preview-bar">
         <span>V3 PREVIEW</span> Explore the experience. Applications, payments
         and publishing are not live.
         <Link href="/preview/review">
           Review demo <span aria-hidden="true">↗</span>
         </Link>
-      </div>
+      </div>}
       <header className="site-header">
         <div className="shell nav">
           <Link
@@ -42,6 +42,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
             {[
               ["THE EXPERIENCE", "/#experience"],
               ["HOW IT WORKS", "/#how"],
+              ["THE GYM", "/gym"],
               ["THE CONTENT", "/#footage"],
             ].map(([text, href]) => (
               <Link key={href} href={href} onClick={() => setOpen(false)}>
@@ -84,9 +85,9 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
               <br />
               LOS ANGELES + ORANGE COUNTY.
             </p>
-            <a href="/#updates" className="text-link">
+            <Link href="/#updates" className="text-link">
               GET UPDATES <Arrow />
-            </a>
+            </Link>
           </div>
           <div className="footer-bottom">
             <span>© {new Date().getFullYear()} PUNCH MENTALITY</span>

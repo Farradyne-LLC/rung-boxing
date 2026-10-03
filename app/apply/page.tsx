@@ -1,79 +1,9 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import ApplicationForm from "./application-form";
-export const metadata: Metadata = { title: "Apply to spar" };
-export default async function ApplyPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ content?: string }>;
-}) {
-  const params = await searchParams;
-  return (
-    <>
-      <section className="page-intro">
-        <div className="shell">
-          <div className="breadcrumb">
-            <Link href="/">HOME</Link>
-            <span>/</span>
-            <span>FIGHTER APPLICATION</span>
-          </div>
-          <p className="eyebrow">THE FIRST STEP TO YOUR NEXT ROUNDS</p>
-          <h1>
-            SHOW US
-            <br />
-            <span className="red-text">WHERE YOU’RE AT.</span>
-          </h1>
-          <p>
-            A little about you. A lot about your boxing. Every application and
-            pairing gets a human review.
-          </p>
-        </div>
-      </section>
-      <section className="product-section">
-        <div className="shell application-layout">
-          <aside className="application-aside">
-            <h2>
-              REAL ROUNDS.
-              <br />
-              THE RIGHT PAIRING.
-            </h2>
-            <p>
-              Los Angeles County + Orange County. General interest for future
-              sessions; a date and place are not yet confirmed.
-            </p>
-            <div className="price-summary">
-              <div>
-                <span>Approved sparring</span>
-                <b>FREE</b>
-              </div>
-              <div>
-                <span>Optional content</span>
-                <b>$69</b>
-              </div>
-            </div>
-            <p>Content interest never affects your eligibility.</p>
-            <ol className="status-trail">
-              <li>
-                <strong>Application review</strong>
-                <p>Experience, weight and availability.</p>
-              </li>
-              <li>
-                <strong>Coach approval</strong>
-                <p>An appropriate partner comes first.</p>
-              </li>
-              <li>
-                <strong>Session confirmation</strong>
-                <p>Only after an explicit confirmation.</p>
-              </li>
-            </ol>
-            <p className="fine">
-              Preview only. Use sample details. This form does not send or save
-              personal information.
-            </p>
-          </aside>
-          <ApplicationForm interested={params.content === "yes"} />
-        </div>
-      </section>
-    </>
-  );
+import ApplicationForm from './application-form';
+import {db,dbReady,liveReady,result} from '../lib/server';
+export const metadata={title:'Apply to spar'};
+export const dynamic='force-dynamic';
+export default async function Apply({searchParams}:{searchParams:Promise<{session?:string}>}){
+ const params=await searchParams;
+ const sessions=dbReady()?result(await db().from('sessions').select('id,title,date').eq('is_public',true).eq('status','UPCOMING').gte('date',new Date().toISOString().slice(0,10)).order('date')):[];
+ return <><section className="page-intro"><div className="shell"><p className="eyebrow">CURATED TECHNICAL SPARRING / LOS ANGELES</p><h1>SHOW YOUR <span className="red-text">ROUNDS.</span></h1><p>Tell us about your boxing. Every fighter and every pairing receives a human review.</p></div></section><section className="product-section"><div className="shell application-layout"><aside className="application-aside"><h2>THE RIGHT ROUNDS.</h2><p>Matched by age, weight, experience, availability and coach judgment.</p><div className="price-summary"><div><span>Sparring participation</span><b>FREE</b></div><div><span>Optional Content Pack</span><b>$99</b></div></div><p>Applying does not guarantee a place. Content purchases never affect eligibility.</p></aside><ApplicationForm sessions={sessions} sessionId={sessions.some(s=>s.id===params.session)?params.session!:''} open={liveReady()}/></div></section></>;
 }

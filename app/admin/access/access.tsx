@@ -1,0 +1,4 @@
+'use client';
+import {useState} from 'react';
+import Link from 'next/link';
+export default function Access({token}:{token:string}){const [error,setError]=useState(''),[busy,setBusy]=useState(false);return <section className="shell workspace narrow"><h1>YOUR ROUNDS DESK.</h1><p>Confirm to open your administrator dashboard.</p><button className="button red" disabled={busy} onClick={async()=>{setBusy(true);try{const r=await fetch('/api/admin/access',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token})});const d=await r.json();if(!r.ok)throw new Error(d.error);location.replace('/admin');}catch(e){setError(e instanceof Error?e.message:'Unable to sign in.');setBusy(false);}}}>{busy?'SIGNING IN…':'OPEN DASHBOARD'}</button>{error&&<p role="alert">{error} <Link href="/admin/login">Request a new link</Link></p>}</section>;}

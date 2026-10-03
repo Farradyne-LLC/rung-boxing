@@ -3,18 +3,19 @@ import { useState, type FormEvent } from "react";
 import { Arrow } from "./ui";
 export default function UpdatesForm() {
   const [done, setDone] = useState(false);
-  function submit(e: FormEvent<HTMLFormElement>) {
+  const [busy,setBusy]=useState(false),[error,setError]=useState('');
+  async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setDone(true);
+    const fields=new FormData(e.currentTarget);setBusy(true);setError('');
+    try{const r=await fetch('/api/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firstName:fields.get('firstName'),email:fields.get('email'),consent:fields.get('consent')==='on',website:fields.get('website')||''})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Unable to subscribe.');setDone(true);}catch(e){setError(e instanceof Error?e.message:'Please try again.');}finally{setBusy(false);}
   }
   return (
     <div>
       {done ? (
         <div className="updates-success" role="status">
-          <b>YOU’VE REACHED THE PREVIEW FINISH LINE.</b>
+          <b>YOU’RE ON THE LIST.</b>
           <p>
-            No email was saved or sent. Live updates registration will open with
-            the pilot.
+            Your subscription has been saved. We will share Punch session news and updates.
           </p>
           <button className="text-link" onClick={() => setDone(false)}>
             TRY AGAIN <Arrow />
@@ -44,13 +45,15 @@ export default function UpdatesForm() {
                 maxLength={254}
               />
             </label>
-            <button type="submit" className="button red">
-              GET UPDATES <Arrow />
+            <button type="submit" className="button red" disabled={busy}>
+              {busy?'SAVING…':'GET UPDATES'} <Arrow />
             </button>
           </div>
+          <label className="check-row"><input type="checkbox" name="consent" required/><span>I would like to receive Punch Mentality news and session updates by email.</span></label>
+          <div className="honeypot" aria-hidden="true"><input aria-label="Leave empty" name="website" tabIndex={-1} autoComplete="off"/></div>
+          {error&&<p role="alert">{error}</p>}
           <p className="fine">
-            Preview only — nothing is sent or saved. This is separate from a
-            fighter application.
+            Separate from a fighter application. See our <a href="/privacy">privacy notice</a>.
           </p>
         </form>
       )}
