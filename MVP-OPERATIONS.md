@@ -10,7 +10,7 @@ Set the server-only values in `.env.example` through Vercel settings. Never add 
 
 ## Email and administrator access
 
-Configure `RESEND_API_KEY` and a verified `EMAIL_FROM` sender. Verify the sending domain's DNS in Resend; do not replace existing mailbox MX records. `ADMIN_NOTIFICATION_EMAIL` is currently `FaruhEmin@gmail.com`. New applications and subscriptions atomically queue a notification with the database write. Post-response delivery, a daily Vercel cron and the administrator retry button drain the queue. `sent_at` means accepted by the provider, not guaranteed inbox delivery. Check Resend delivery/bounce status when investigating missing mail. Pending or failed mail remains visible in `/admin`; database saves are not lost.
+Configure `RESEND_API_KEY` and a verified `EMAIL_FROM` sender. Verify the sending domain's DNS in Resend; do not replace existing mailbox MX records. `ADMIN_NOTIFICATION_EMAIL` is currently `farukhimin@gmail.com`. New applications and subscriptions atomically queue a notification with the database write. Post-response delivery, a daily Vercel cron and the administrator retry button drain the queue. `sent_at` means accepted by the provider, not guaranteed inbox delivery. Check Resend delivery/bounce status when investigating missing mail. Pending or failed mail remains visible in `/admin`; database saves are not lost.
 
 Visit `/admin/login` and request a one-time email link using an authorized address. The link opens a confirmation screen before it creates the secure HTTP-only session, so email scanners do not consume it. Existing Supabase admin users can also use a password. Public registration never creates an admin account.
 
