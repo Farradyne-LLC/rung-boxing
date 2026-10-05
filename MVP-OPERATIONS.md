@@ -1,3 +1,7 @@
+# Historical Vercel / Supabase instructions
+
+These instructions describe the previous deployment. The VPS branch uses PostgreSQL directly. See VPS-OPERATIONS.md for the current setup.
+
 # Punch Mentality operations
 
 Applications and update subscriptions are stored in Supabase, not email. `/admin` lists applications, internal notes, sessions, matchups, subscribers and queued notifications. Public routes use explicit field projections; private tables have RLS enabled and no anonymous/authenticated access. Admin requests validate a Supabase user against `ADMIN_EMAILS` on every request.

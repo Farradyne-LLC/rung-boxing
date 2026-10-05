@@ -1,0 +1,30 @@
+{
+ admin off
+ email farukhimin@gmail.com
+}
+# Prepared only. Do not activate before the launch checklist is complete.
+punchmentality.com {
+ request_body {
+  max_size 16MB
+ }
+ @admin path_regexp protected (?i)^/(admin|api/admin|api/notifications)(/|$)
+ respond @admin 404
+ reverse_proxy web:3000 {
+  header_up -X-Punch-Admin-Ingress
+  header_up -X-Middleware-Subrequest
+  header_up X-Punch-Client-IP {remote_host}
+ }
+}
+www.punchmentality.com {
+ redir https://punchmentality.com{uri} permanent
+}
+http://:8081 {
+ request_body {
+  max_size 16MB
+ }
+ reverse_proxy web:3000 {
+  header_up X-Punch-Admin-Ingress {$ADMIN_INGRESS_SECRET}
+  header_up -X-Middleware-Subrequest
+  header_up X-Punch-Client-IP {remote_host}
+ }
+}

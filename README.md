@@ -1,3 +1,11 @@
+# Punch Mentality — PostgreSQL MVP
+
+This branch runs on the isolated Contabo VPS with a private Tailscale admin ingress. See [VPS operations](VPS-OPERATIONS.md) for deployment, environment variables, migrations, email setup, backups and the administrator workflow.
+
+Admin: review/filter applications → inspect photos → update notes/status → approve an adult Public profile → add a YouTube/Vimeo link. Application and subscriber CSV exports are separate. No video-file uploads. Email provider setup and public DNS/TLS cutover are tracked separately; the current staging does not require Vercel or Supabase.
+
+## Historical V3 design context
+
 # Punch Mentality V3
 
 Responsive, interactive **preview** of the V3 fighter experience. Built by evolving the existing Next.js site; see [the approved specification](docs/V3-SPEC.md), [September 26 updates](docs/SEPTEMBER-26-AMENDMENT.md) and [implementation / launch boundaries](docs/IMPLEMENTATION.md).

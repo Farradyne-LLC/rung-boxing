@@ -9,7 +9,7 @@
     "test:e2e": "playwright test",
     "lint": "eslint app middleware.ts",
     "typecheck": "tsc --noEmit",
-    "db:migrate": "node scripts/migrate.cjs"
+    "db:migrate": "node scripts/migrate-postgres.cjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",

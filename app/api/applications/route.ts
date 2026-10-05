@@ -8,7 +8,7 @@ import {transaction,sql} from '../../lib/postgres';
 import {applicationBody,preparePhotos} from '../../lib/photos';
 import {flushNotifications} from '../../lib/notifications';
 export async function POST(req:Request){const written:string[]=[];let committed=false;try{
- if(!liveReady())throw new HttpError(503,'Applications are not open yet. Please check back soon.');checkOrigin(req);await rate(req,'apply',6);
+ if(!liveReady())throw new HttpError(503,'Applications are not open yet. Please check back soon.');checkOrigin(req);if(Number(req.headers.get('content-length')||0)>16*1024*1024)throw new HttpError(413,'Application is too large.');await rate(req,'apply',6);
  const input=await applicationBody(req);const data=applicationSchema.parse(input.data);const photos=await preparePhotos(input.files);const dir=process.env.PHOTO_DIR||'/data/photos';
  const id=await transaction(async c=>{await c.query('SELECT pg_advisory_xact_lock(hashtext($1))',[data.request_id]);const existing=await c.query('SELECT id FROM applications WHERE request_id=$1',[data.request_id]);if(existing.rows[0])return existing.rows[0].id;
  const r=await c.query('SELECT submit_application($1,$2,$3,$4) AS id',[{...data,terms_version:TERMS_VERSION},data.request_id,env('ADMIN_NOTIFICATION_EMAIL'),env('ADMIN_URL')]);const id=r.rows[0].id;const f=await c.query('SELECT fighter_id FROM applications WHERE id=$1',[id]);await mkdir(dir,{recursive:true});
