@@ -55,3 +55,5 @@ Rollback before collecting new VPS data: restore those exact Vercel A/CNAME reco
 ## Tests
 
 `npm run lint`, `npm run typecheck`, Docker production build; existing `tests/flows.spec.ts` for desktop/mobile. Explicit live staging tests: set `VPS_QA=1`, `QA_BASE_URL=http://100.102.7.5:3101`, `VPS_ADMIN_FILE` to the protected bootstrap credential file, then run `tests/vps.spec.ts`. Tracing is disabled during credential-bearing tests. Synthetic QA records are isolated by the `vps-qa-…@example.com` namespace and must be cleaned, including queued notifications, after verification. Never run cleanup against real participant records.
+
+Embedded players use strict-origin-when-cross-origin so YouTube receives the site origin without the profile path, following https://developers.google.com/youtube/terms/required-minimum-functionality . External playback still depends on the video owner's embed permissions and the provider's availability.
