@@ -13,7 +13,7 @@ export const applicationSchema = z.object({
  height:z.coerce.number().min(36).max(100),current_weight:z.coerce.number().min(50).max(500),stance:z.enum(['Orthodox','Southpaw','Switch']),
  years_boxing:z.coerce.number().min(0).max(90),competition_experience:z.enum(['No fights','Amateur','Professional']),amateur_fights:z.coerce.number().int().min(0).max(1000),professional_fights:z.coerce.number().int().min(0).max(1000),
  sparring_experience:text(2000),skill_level:z.enum(['Beginner','Developing','Intermediate','Advanced','Competitive amateur','Professional']),
- preferred_intensity:z.enum(['Technical/light','Controlled/moderate','Competitive technical']),availability:text(1000),video_url:safeUrl.default(''),notes:z.string().trim().max(3000).default(''),
+ preferred_intensity:z.enum(['Technical/light','Controlled/moderate','Competitive technical']),availability:text(1000),video_url:safeUrl.default(''),boxrec_url:safeUrl.refine(v=>!v||/^https:\/\/(www\.)?boxrec\.com(?:[/?#]|$)/i.test(v),'Use a BoxRec HTTPS link.').default(''),notes:z.string().trim().max(3000).default(''),
  emergency_name:text(150),emergency_phone:text(40),visibility:z.enum(['PUBLIC','PRIVATE']),media_consent:z.boolean(),
  rules_accepted:z.literal(true),accuracy_accepted:z.literal(true),no_guarantee_accepted:z.literal(true),recording_accepted:z.literal(true),
  guardian_name:z.string().trim().max(150).default(''),guardian_contact:z.string().trim().max(254).default(''),website:z.literal('').default(''),
@@ -21,10 +21,8 @@ export const applicationSchema = z.object({
  const age=ageFromDob(d.date_of_birth)!;
  if(d.years_boxing>age)ctx.addIssue({code:'custom',path:['years_boxing'],message:'Experience cannot exceed age.'});
  if(age<18&&(!d.guardian_name||!d.guardian_contact))ctx.addIssue({code:'custom',path:['guardian_name'],message:'A guardian contact is required for individual review.'});
- if(d.competition_experience==='No fights'&&(d.amateur_fights||d.professional_fights))ctx.addIssue({code:'custom',message:'Fight counts must match competition experience.'});
- if(d.competition_experience==='Amateur'&&d.professional_fights)ctx.addIssue({code:'custom',message:'Select Professional when professional fights are listed.'});
  if(age>=18&&d.visibility==='PUBLIC'&&!d.media_consent)ctx.addIssue({code:'custom',message:'Choose Private if you do not consent to public media use.'});
-});
+}).transform(d=>({...d,competition_experience:d.professional_fights>0?'Professional':d.amateur_fights>0&&d.competition_experience==='No fights'?'Amateur':d.competition_experience}));
 export const sessionSchema=z.object({title:text(150),slug:z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(100),date:z.iso.date(),start_time:z.string().regex(/^\d{2}:\d{2}$/),location_name:text(150),city:text(100),protected_location_field:text(400),description:z.string().max(3000),is_public:z.boolean()});
 export const matchupSchema=z.object({application_a_id:z.uuid(),application_b_id:z.uuid(),session_id:z.uuid(),rounds:z.coerce.number().int().min(1).max(12),round_length:z.coerce.number().refine(n=>[60,90,120,180].includes(n)),internal_notes:z.string().max(3000).default('')});
 export type FighterInput=z.infer<typeof applicationSchema>;
