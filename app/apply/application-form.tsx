@@ -6,6 +6,7 @@ import {ageFromDob} from '../lib/application';
 import {track} from '../lib/analytics';
 import {applicationSchema} from '../lib/validation';
 import {useApplicationDraft} from '../lib/use-application-draft';
+import {requestId as makeRequestId} from '../lib/request-id';
 export default function ApplicationForm({sessions,sessionId,open}:{sessions:{id:string;title:string;date:string}[];sessionId:string;open:boolean}){
  const [step,setStep]=useState(0),[error,setError]=useState(''),[busy,setBusy]=useState(false),[received,setReceived]=useState(false);
  const [d,setD]=useState<Record<string,string|boolean>>({session_id:sessionId,amateur_fights:'0',professional_fights:'0',visibility:'PRIVATE',media_consent:false,competition_experience:'No fights',website:''});
@@ -19,7 +20,7 @@ export default function ApplicationForm({sessions,sessionId,open}:{sessions:{id:
  function area(key:string,label:string,required=true){return <label className="full">{label}{required?' *':' (optional)'}<textarea name={key} required={required} maxLength={3000} value={String(d[key]||'')} onChange={e=>update(key,e.target.value)} rows={3}/></label>;}
  function consent(key:string,label:React.ReactNode){return <label className="check-row"><input type="checkbox" name={key} required checked={Boolean(d[key])} onChange={e=>update(key,e.target.checked)}/><span>{label}</span></label>;}
  async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();setError('');if(step<2){if(step===0&&age===null){setError('Enter a valid date of birth.');return;}setStep(step+1);setTimeout(()=>heading.current?.focus(),0);return;}
-  if(!requestId.current){requestId.current=crypto.randomUUID();setD(old=>({...old,request_id:requestId.current}));}
+  if(!requestId.current){requestId.current=makeRequestId();setD(old=>({...old,request_id:requestId.current}));}
   const parsed=applicationSchema.safeParse({...d,request_id:requestId.current,visibility:youth?'PRIVATE':d.visibility,media_consent:youth||d.visibility==='PRIVATE'?false:d.media_consent});
   if(!parsed.success){setError(parsed.error.issues[0].message);return;}
   setBusy(true);try{const form=new FormData();form.set('application',JSON.stringify(parsed.data));photos.forEach(p=>form.append('photos',p));const r=await fetch('/api/applications',{method:'POST',body:form});const data=await r.json();if(!r.ok)throw new Error(data.error);setReceived(true);track('application_submitted');}catch(e){setError(e instanceof Error?e.message:'Unable to submit. Please try again.');}finally{setBusy(false);}
