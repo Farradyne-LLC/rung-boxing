@@ -6,7 +6,7 @@ types.setTypeParser(1082, v=>v);
 types.setTypeParser(1184, v=>new Date(v).toISOString());
 types.setTypeParser(1700, Number);
 let pool:Pool;
-export function sql(){return pool??=new Pool({connectionString:process.env.DATABASE_URL,password:process.env.DB_PASSWORD_FILE?readFileSync(process.env.DB_PASSWORD_FILE,'utf8').trim():undefined,max:8,connectionTimeoutMillis:5000,statement_timeout:15000});}
+export function sql(){if(!pool){const url=new URL(process.env.DATABASE_URL!);if(process.env.DB_PASSWORD_FILE)url.password=readFileSync(process.env.DB_PASSWORD_FILE,'utf8').trim();pool=new Pool({connectionString:url.toString(),max:8,connectionTimeoutMillis:5000,statement_timeout:15000});}return pool;}
 export async function transaction<T>(work:(client:PoolClient)=>Promise<T>){const c=await sql().connect();try{await c.query('BEGIN');const r=await work(c);await c.query('COMMIT');return r;}catch(e){await c.query('ROLLBACK');throw e;}finally{c.release();}}
 const tables=new Set(['fighters','applications','sessions','matchups','fighter_matchup_confirmations','orders','media','notification_outbox','stripe_events','rate_limits','audit_log','subscribers']);
 const functions=new Set(['take_rate_limit','submit_application','create_matchup','respond_matchup','reserve_order','record_payment','manage_matchup','subscribe_updates']);

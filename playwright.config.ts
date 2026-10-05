@@ -6,7 +6,7 @@ export default defineConfig({
   timeout: 45000,
   use: {
     baseURL: process.env.QA_BASE_URL || "http://127.0.0.1:3000",
-    trace: "retain-on-failure",
+    trace: process.env.VPS_QA ? "off" : "retain-on-failure",
   },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
