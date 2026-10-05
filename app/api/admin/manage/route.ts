@@ -3,6 +3,7 @@ import {z} from 'zod';
 import {admin,body,db,failure,hash,newToken,origin,result,HttpError} from '../../../lib/server';
 import {matchupSchema,sessionSchema,safeUrl} from '../../../lib/validation';
 import {flushNotifications} from '../../../lib/notifications';
+import {sql} from '../../../lib/postgres';
 export async function POST(req:Request){try{
  const user=await admin();const input=await body(req);const action=z.string().parse(input.action);let value:unknown={ok:true};
  if(action==='SESSION')value=result(await db().from('sessions').insert(sessionSchema.parse(input.data)).select('id').single());
@@ -30,8 +31,16 @@ export async function POST(req:Request){try{
   if(m.status!=='COMPLETED'||(d.fighter_id&&![m.fighter_a_id,m.fighter_b_id].includes(d.fighter_id)))throw new HttpError(409,'Media must belong to a completed matchup.');
   if(d.published&&!m.published)throw new HttpError(409,'Approve matchup publication first.');
   result(await db().from('media').insert({...d,fighter_id:d.fighter_id||null}).select('id').single());
+ }else if(action==='PROFILE_VIDEO'){
+  const d=z.object({id:z.uuid(),title:z.string().trim().min(1).max(150),url:safeUrl.refine(Boolean),published:z.boolean(),permission_confirmed:z.boolean()}).parse(input.data);
+  const eligible=await sql().query("SELECT id FROM fighters f WHERE id=$1 AND visibility='PUBLIC' AND profile_published AND NOT EXISTS(SELECT 1 FROM applications a WHERE a.fighter_id=f.id AND (a.guardian_required OR NOT a.media_consent))",[d.id]);
+  if(d.published&&(!eligible.rows.length||!d.permission_confirmed))throw new HttpError(409,'Public video requires an approved adult Public profile and publication permission for everyone shown.');
+  await sql().query('INSERT INTO profile_media(fighter_id,title,url,published) VALUES($1,$2,$3,$4)',[d.id,d.title,d.url,d.published]);
+ }else if(action==='REMOVE_PROFILE_VIDEO'){
+  const d=z.object({id:z.uuid()}).parse(input.data);await sql().query('DELETE FROM profile_media WHERE id=$1',[d.id]);
  }else if(action==='PROFILE'){
-  const d=z.object({id:z.uuid(),profile_photo_url:safeUrl,profile_published:z.boolean()}).parse(input.data);
+  const d=z.object({id:z.uuid(),profile_photo_url:z.string().max(1500),profile_published:z.boolean()}).parse(input.data);
+  if(d.profile_photo_url.startsWith('/api/photos/')){const p=await sql().query('SELECT id FROM fighter_photos WHERE id::text=$1 AND fighter_id=$2',[d.profile_photo_url.slice(12),d.id]);if(!p.rows.length)throw new HttpError(400,'Choose a photo belonging to this fighter.');}else safeUrl.parse(d.profile_photo_url);
   const f=result(await db().from('fighters').select('visibility,date_of_birth').eq('id',d.id).single());
   const apps=result(await db().from('applications').select('media_consent,guardian_required').eq('fighter_id',d.id));
   if(d.profile_published&&(f.visibility!=='PUBLIC'||!apps.length||apps.some(a=>!a.media_consent||a.guardian_required)))throw new HttpError(409,'Public profile requires adult media consent.');
@@ -47,7 +56,7 @@ export async function POST(req:Request){try{
   }
   result(await db().from('sessions').update({status:d.status}).eq('id',d.id).select('id').single());
  }else if(action==='RETRY_EMAILS'){
-  await db().from('notification_outbox').update({attempts:0}).is('sent_at',null);value=await flushNotifications();
+  await db().from('notification_outbox').update({attempts:0,next_attempt_at:new Date().toISOString()}).is('sent_at',null);value=await flushNotifications();
  }else throw new HttpError(400,'Unknown action.');
  if(action!=='MATCHUP'&&action!=='MATCHUP_STATUS')result(await db().from('audit_log').insert({actor:user.id,action,entity_id:input.data?.id||null}).select('id').single());
  return Response.json(value);

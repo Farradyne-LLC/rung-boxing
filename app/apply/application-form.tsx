@@ -10,6 +10,7 @@ export default function ApplicationForm({sessions,sessionId,open}:{sessions:{id:
  const [step,setStep]=useState(0),[error,setError]=useState(''),[busy,setBusy]=useState(false),[received,setReceived]=useState(false);
  const [d,setD]=useState<Record<string,string|boolean>>({session_id:sessionId,amateur_fights:'0',professional_fights:'0',visibility:'PRIVATE',media_consent:false,competition_experience:'No fights',website:''});
  const requestId=useRef('');const started=useRef(false);const heading=useRef<HTMLHeadingElement>(null);
+ const [photos,setPhotos]=useState<File[]>([]);
  const draft=useApplicationDraft('punch-application-mvp-v1',d,step,received,(saved,savedStep)=>{setD(old=>({...old,...saved}));setStep(savedStep);requestId.current=String(saved.request_id||'');},2);
  const age=ageFromDob(String(d.date_of_birth||'')),youth=age!==null&&age<18;
  function update(key:string,value:string|boolean){if(!started.current){track('application_started');started.current=true;}setD(old=>({...old,[key]:value}));setError('');}
@@ -21,7 +22,7 @@ export default function ApplicationForm({sessions,sessionId,open}:{sessions:{id:
   if(!requestId.current){requestId.current=crypto.randomUUID();setD(old=>({...old,request_id:requestId.current}));}
   const parsed=applicationSchema.safeParse({...d,request_id:requestId.current,visibility:youth?'PRIVATE':d.visibility,media_consent:youth||d.visibility==='PRIVATE'?false:d.media_consent});
   if(!parsed.success){setError(parsed.error.issues[0].message);return;}
-  setBusy(true);try{const r=await fetch('/api/applications',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(parsed.data)});const data=await r.json();if(!r.ok)throw new Error(data.error);setReceived(true);track('application_submitted');}catch(e){setError(e instanceof Error?e.message:'Unable to submit. Please try again.');}finally{setBusy(false);}
+  setBusy(true);try{const form=new FormData();form.set('application',JSON.stringify(parsed.data));photos.forEach(p=>form.append('photos',p));const r=await fetch('/api/applications',{method:'POST',body:form});const data=await r.json();if(!r.ok)throw new Error(data.error);setReceived(true);track('application_submitted');}catch(e){setError(e instanceof Error?e.message:'Unable to submit. Please try again.');}finally{setBusy(false);}
  }
  if(received)return <div className="form-panel" role="status"><p className="eyebrow">SHOW YOUR ROUNDS</p><h2>APPLICATION RECEIVED.</h2><p>We review fighters individually and build matchups based on weight, experience, availability and compatibility.</p><p>Submitting an application does not guarantee a matchup. If selected, you will receive a confirmation link.</p>{youth&&<p>Your application requires guardian review before participation can be confirmed.</p>}<Link className="button red" href="/sessions">EXPLORE SESSIONS</Link></div>;
  if(!draft.ready)return <p role="status">Loading your application…</p>;
@@ -39,6 +40,7 @@ export default function ApplicationForm({sessions,sessionId,open}:{sessions:{id:
    {consent('recording_accepted','I understand Punch Mentality may record the session.')}
    {!youth&&d.visibility==='PUBLIC'&&consent('media_consent','I consent to publication of my approved profile and session footage on Punch Mentality’s website, social channels, YouTube and promotional materials, including advertising, as described in the participation rules.')}
    <p className="notice">Sparring participation is free. The $99 Punch Content Pack is optional and offered only after the matchup is confirmed. No payment with this application.</p></div></>}
+  {step===2&&<label className="full">Profile photos (optional, up to 3)<input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={e=>{const files=Array.from(e.target.files||[]);if(files.length>3||files.some(f=>f.size>5*1024*1024)){setError('Choose up to 3 photos, maximum 5 MB each.');e.target.value='';setPhotos([]);}else{setPhotos(files);setError('');}}}/><span>JPEG, PNG or WebP. First photo becomes your avatar. Photos follow your visibility choice and organizer review. Reselect photos after a page reload.</span>{photos.length>0&&<span>{photos.map(f=>f.name).join(', ')}</span>}</label>}
   </div><div className="honeypot" aria-hidden="true"><label>Leave empty<input name="website" tabIndex={-1} autoComplete="off" value={String(d.website)} onChange={e=>update('website',e.target.value)}/></label></div>
   {error&&<p className="form-error" role="alert">{error}</p>}<div className="form-actions">{step>0&&<button type="button" className="button outline" disabled={busy} onClick={()=>setStep(step-1)}>BACK</button>}<button className="button red" disabled={busy||(step===2&&!open)}>{busy?'SAVING…':step===2?'SUBMIT APPLICATION':'CONTINUE →'}</button></div>
  </form>;

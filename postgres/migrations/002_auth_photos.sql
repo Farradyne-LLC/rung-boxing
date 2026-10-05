@@ -1,0 +1,13 @@
+CREATE TABLE admin_users (id uuid PRIMARY KEY DEFAULT gen_random_uuid(),email text UNIQUE NOT NULL,password_hash text,active boolean NOT NULL DEFAULT true);
+CREATE TABLE admin_sessions (token_hash text PRIMARY KEY,admin_id uuid NOT NULL REFERENCES admin_users(id),expires_at timestamptz NOT NULL);
+CREATE TABLE admin_links (token_hash text PRIMARY KEY,admin_id uuid NOT NULL REFERENCES admin_users(id),expires_at timestamptz NOT NULL);
+CREATE TABLE fighter_photos (id uuid PRIMARY KEY DEFAULT gen_random_uuid(),fighter_id uuid NOT NULL REFERENCES fighters(id),position integer NOT NULL CHECK(position BETWEEN 0 AND 2),filename text NOT NULL UNIQUE,created_at timestamptz NOT NULL DEFAULT now(),UNIQUE(fighter_id,position));
+CREATE TABLE profile_media (id uuid PRIMARY KEY DEFAULT gen_random_uuid(),fighter_id uuid NOT NULL REFERENCES fighters(id),title text NOT NULL,url text NOT NULL,published boolean NOT NULL DEFAULT false,created_at timestamptz NOT NULL DEFAULT now());
+ALTER TABLE notification_outbox ADD COLUMN next_attempt_at timestamptz NOT NULL DEFAULT now();
+ALTER TABLE notification_outbox ADD COLUMN provider_id text;
+CREATE INDEX admin_session_expiry ON admin_sessions(expires_at);
+REVOKE ALL ON ALL TABLES IN SCHEMA public FROM PUBLIC;
+REVOKE ALL ON ALL FUNCTIONS IN SCHEMA public FROM PUBLIC;
+GRANT USAGE ON SCHEMA public TO rung_app;
+GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA public TO rung_app;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO rung_app;

@@ -1,12 +1,5 @@
-import {cookies} from 'next/headers';
-import {createClient} from '@supabase/supabase-js';
 import {z} from 'zod';
 import {body,env,rate,failure,HttpError} from '../../../lib/server';
-export async function POST(req:Request){try{
- await rate(req,'login',10);const d=z.object({email:z.email(),password:z.string().min(1).max(200)}).parse(await body(req));
- const client=createClient(env('SUPABASE_URL'),env('SUPABASE_ANON_KEY'),{auth:{persistSession:false,autoRefreshToken:false}});
- const {data,error}=await client.auth.signInWithPassword(d);
- if(error||!data.session||!data.user.email_confirmed_at||!env('ADMIN_EMAILS').split(',').map(s=>s.trim().toLowerCase()).includes(d.email.toLowerCase()))throw new HttpError(401,'Unable to sign in. Check your administrator credentials.');
- (await cookies()).set('pm-admin',data.session.access_token,{httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:'strict',path:'/',maxAge:Math.min(data.session.expires_in,3600)});
- return Response.json({ok:true});
-}catch(e){return failure(e);}}
+import {sql} from '../../../lib/postgres';
+import {createSession,verifyPassword} from '../../../lib/auth';
+export async function POST(req:Request){try{await rate(req,'login',10);const d=z.object({email:z.email(),password:z.string().min(1).max(200)}).parse(await body(req));const {rows}=await sql().query('SELECT * FROM admin_users WHERE email=$1 AND active',[d.email.toLowerCase()]);const user=rows[0];if(!user?.password_hash||!verifyPassword(d.password,user.password_hash)||!env('ADMIN_EMAILS').split(',').includes(user.email))throw new HttpError(401,'Unable to sign in. Check your administrator credentials.');await createSession(user.id);return Response.json({ok:true});}catch(e){return failure(e);}}

@@ -1,0 +1,24 @@
+{
+ admin off
+ auto_https off
+}
+:8080 {
+ request_body {
+  max_size 16MB
+ }
+ @admin path /admin /admin/* /api/admin /api/admin/* /api/notifications
+ respond @admin 404
+ reverse_proxy web:3000 {
+  header_up -X-Punch-Admin-Ingress
+  header_up X-Punch-Client-IP {remote_host}
+ }
+}
+:8081 {
+ request_body {
+  max_size 16MB
+ }
+ reverse_proxy web:3000 {
+  header_up X-Punch-Admin-Ingress {$ADMIN_INGRESS_SECRET}
+  header_up X-Punch-Client-IP {remote_host}
+ }
+}

@@ -1,5 +1,6 @@
 import {NextResponse,type NextRequest} from 'next/server';
 export function middleware(req:NextRequest){
+ if(/^\/(admin|api\/admin|api\/notifications)(\/|$)/i.test(req.nextUrl.pathname)&&(!process.env.ADMIN_INGRESS_SECRET||req.headers.get('x-punch-admin-ingress')!==process.env.ADMIN_INGRESS_SECRET))return new NextResponse('Not found',{status:404});
  const res=NextResponse.next();
  res.headers.set('X-Content-Type-Options','nosniff');res.headers.set('X-Frame-Options','DENY');res.headers.set('Referrer-Policy','no-referrer');
  res.headers.set('Permissions-Policy','camera=(), microphone=(), geolocation=()');
