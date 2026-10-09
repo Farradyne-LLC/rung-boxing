@@ -23,14 +23,14 @@ The public deployment and its database remain unchanged. Preview uses only synth
 - Isolated Postgres/API integration: application/lead save, required Instagram, photos, retry deduplication, owner access, photo removal, avatar/cover, stale write rejection, admin audit, stable slugs/aliases, minor publication restriction.
 - Services: both kinds save, validation and source-rights checks, deduplication, exactly one organizer notification per request, unauthenticated/public admin denial, status/reason validation, audit, CSV.
 - Browser: service page mobile overflow/contrast, desktop view, request submit → confirmation → saved admin row/detail. Preview records persisted through application container replacement.
-- Stripe sandbox: actual hosted Checkout with 4242 test card → Stripe signed event delivered through Stripe CLI → database PAID → browser verified-payment notice. Exactly one receipt queued. Actual Stripe expired event marked a separate order FAILED.
+- Stripe sandbox: actual hosted Checkout with 4242 test card → Stripe signed event delivered through Stripe CLI → database PAID → browser verified-payment notice. Exactly one receipt queued. Actual Stripe expired event marked a separate order FAILED. Retrying reused the order with a new attempt/session. Declined test card showed an error; cancelling returned to the invitation without granting PAID.
 - Checkout gating, fixed server $99 USD price, terms acceptance, session reuse, and fake success redirect not granting payment status.
 - Additional synthetic signed webhook tests: invalid signature, wrong amount/session, unpaid completion, repeated event, and delayed failure after payment.
 - Public-mode isolated container: 8 principal routes return 200 with canonical and without accidental noindex/preview; robots/sitemap correct; private paths noindex; `/preview` 404; `/watch` 308. No public port exposed for this test.
 
 ## Not yet verified / launch dependencies
 - Real Stripe account activation, live product/price, live webhook endpoint and keys are deliberately not enabled. Hosted checkout currently displays the account brand “UMH Studio”; approve or configure the desired customer-facing business identity before launch. No real payments/refunds tested.
-- Stripe decline/3DS, refund/dispute handling and actual receipt email delivery have not been tested end-to-end in this iteration. Do not claim these paths as fully verified.
+- Stripe 3DS, refund/dispute handling and actual receipt email delivery have not been tested end-to-end in this iteration. Do not claim these paths as fully verified.
 - New email templates only queued in preview (no Resend key there). At launch verify delivery to an owner-authorized recipient; never enable mail on this synthetic-data database.
 - Before an order is payable, supply agreed scope/round coverage, reel length, file formats, delivery date, cancellation and non-delivery remedy. These are not invented site-wide promises.
 - Team role descriptions, precise arrival/parking details and testimonials require confirmed owner data. No fake reviews or qualifications added.
