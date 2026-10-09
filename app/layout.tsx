@@ -1,3 +1,4 @@
+export const dynamic='force-dynamic';
 import type { Metadata } from "next";
 import { Barlow_Condensed, Manrope, IBM_Plex_Mono } from "next/font/google";
 import SiteShell from "./components/site-shell";

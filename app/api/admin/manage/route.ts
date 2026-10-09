@@ -3,9 +3,11 @@ import {z} from 'zod';
 import {admin,body,db,failure,hash,newToken,origin,result,HttpError} from '../../../lib/server';
 import {matchupSchema,sessionSchema,safeUrl} from '../../../lib/validation';
 import {flushNotifications} from '../../../lib/notifications';
+import {editApplication} from '../../../lib/admin-edit';
 import {sql} from '../../../lib/postgres';
 export async function POST(req:Request){try{
  const user=await admin();const input=await body(req);const action=z.string().parse(input.action);let value:unknown={ok:true};
+ if(action==='EDIT_APPLICATION')return Response.json(await editApplication(input.data,user));
  if(action==='SESSION')value=result(await db().from('sessions').insert(sessionSchema.parse(input.data)).select('id').single());
  else if(action==='MATCHUP'){
   const d=matchupSchema.parse(input.data);const ta=newToken(),tb=newToken();
@@ -58,6 +60,6 @@ export async function POST(req:Request){try{
  }else if(action==='RETRY_EMAILS'){
   await db().from('notification_outbox').update({attempts:0,next_attempt_at:new Date().toISOString()}).is('sent_at',null);value=await flushNotifications();
  }else throw new HttpError(400,'Unknown action.');
- if(action!=='MATCHUP'&&action!=='MATCHUP_STATUS')result(await db().from('audit_log').insert({actor:user.id,action,entity_id:input.data?.id||null}).select('id').single());
+ if(action!=='MATCHUP'&&action!=='MATCHUP_STATUS')result(await db().from('audit_log').insert({actor:user.id,actor_label:user.email,action,entity_id:input.data?.id||null}).select('id').single());
  return Response.json(value);
 }catch(e){return failure(e);}}

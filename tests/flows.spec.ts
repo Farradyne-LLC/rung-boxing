@@ -6,7 +6,7 @@ export async function contact(page:Page,email='qa@example.com'){
  await page.getByRole('button',{name:'CONTINUE'}).click();await expect(page.getByRole('heading',{name:'YOUR BOXING.'})).toBeVisible();
 }
 export async function boxing(page:Page){
- await page.locator('[name=city]').fill('Los Angeles');await page.locator('[name=height]').selectOption('70');await page.locator('[name=current_weight]').fill('175');await page.locator('[name=years_boxing]').fill('3');
+ await page.locator('[name=instagram]').fill('qa_boxer');await page.locator('[name=city]').fill('Los Angeles');await page.locator('[name=height]').selectOption('70');await page.locator('[name=current_weight]').fill('175');await page.locator('[name=years_boxing]').fill('3');
  await page.locator('[name=stance]').selectOption('Orthodox');await page.locator('[name=skill_level]').selectOption('Intermediate');await page.locator('[name=sparring_experience]').selectOption('Weekly');await page.locator('[name=preferred_intensity]').selectOption('Technical/light');await page.getByLabel('Weekend mornings',{exact:true}).check();
  await page.getByRole('button',{name:'CONTINUE'}).click();await expect(page.getByRole('heading',{name:'READY FOR REVIEW.'})).toBeVisible();
 }
