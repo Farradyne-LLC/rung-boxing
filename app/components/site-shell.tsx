@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Arrow } from "./ui";
-export default function SiteShell({ children, live=false }: { children: React.ReactNode;live?:boolean }) {
+export default function SiteShell({ children, preview=false }: { children: React.ReactNode;preview?:boolean }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const menuButton = useRef<HTMLButtonElement>(null);
@@ -21,13 +21,7 @@ export default function SiteShell({ children, live=false }: { children: React.Re
       <a href="#main" className="skip-link">
         Skip to content
       </a>
-      {!live&&<div className="preview-bar">
-        <span>V3 PREVIEW</span> Explore the experience. Applications, payments
-        and publishing are not live.
-        <Link href="/preview/review">
-          Review demo <span aria-hidden="true">↗</span>
-        </Link>
-      </div>}
+      {preview&&<div className="preview-bar"><span>PRIVATE PREVIEW</span> Test environment. Requests stay separate from the live site; emails and real payments are disabled.</div>}
       <header className="site-header">
         <div className="shell nav">
           <Link
@@ -51,7 +45,7 @@ export default function SiteShell({ children, live=false }: { children: React.Re
           >
             {[
               ["THE EXPERIENCE", "/#experience"],
-              ["HOW IT WORKS", "/#how"],
+              ["SERVICES", "/#services"],
               ["THE GYM", "/gym"],
               ["SESSIONS", "/sessions"],
             ].map(([text, href]) => (
@@ -104,6 +98,9 @@ export default function SiteShell({ children, live=false }: { children: React.Re
           <div className="footer-bottom">
             <span>© {new Date().getFullYear()} PUNCH MENTALITY</span>
             <div>
+              <Link href="/highlight-edit">Highlight Edit</Link>
+              <Link href="/private-shoot">Private Shoot</Link>
+              <a href="mailto:farukhimin@gmail.com">Contact</a>
               <Link href="/privacy">Privacy</Link>
               <Link href="/terms">Terms of Participation & Content</Link>
             </div>

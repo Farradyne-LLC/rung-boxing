@@ -1,0 +1,7 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {serviceRequestSchema} from '../app/lib/service-request';
+const base={request_id:'11111111-1111-4111-8111-111111111111',name:'QA',email:'qa@example.com',brief:'A personal boxing story'};
+test('editing requests are independent of fighter applications and permit missing material',()=>{const r=serviceRequestSchema.parse({...base,kind:'HIGHLIGHT_EDIT',edit_type:'Personal highlight',rights_confirmed:true});assert.equal(r.kind,'HIGHLIGHT_EDIT');assert(!('date_of_birth' in r));});
+test('rights, safe links and spam protection enforced',()=>{assert.equal(serviceRequestSchema.safeParse({...base,kind:'HIGHLIGHT_EDIT',edit_type:'Personal highlight',rights_confirmed:false}).success,false);assert.equal(serviceRequestSchema.safeParse({...base,kind:'HIGHLIGHT_EDIT',edit_type:'Personal highlight',rights_confirmed:true,source_url:'javascript:alert(1)'}).success,false);assert.equal(serviceRequestSchema.safeParse({...base,kind:'PRIVATE_SHOOT',shoot_type:'Training session',location:'LA',preferred_dates:'Flexible',website:'spam'}).success,false);});
+test('private shoot requires location and dates but budget and Instagram are optional',()=>{assert(serviceRequestSchema.safeParse({...base,kind:'PRIVATE_SHOOT',shoot_type:'Training session',location:'LA',preferred_dates:'Flexible'}).success);assert(!serviceRequestSchema.safeParse({...base,kind:'PRIVATE_SHOOT',shoot_type:'Training session'}).success);});

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Barlow_Condensed, Manrope, IBM_Plex_Mono } from "next/font/google";
 import SiteShell from "./components/site-shell";
 import "./globals.css";
+import {indexable,publicOrigin} from "./lib/seo";
 
 const display = Barlow_Condensed({
   subsets: ["latin"],
@@ -22,16 +23,17 @@ const mono = IBM_Plex_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
+export function generateMetadata():Metadata {return {
+  metadataBase:new URL(publicOrigin),
   title: {
     default: "Punch Mentality — Real Rounds. Real Footage. Real Progress.",
     template: "%s | Punch Mentality",
   },
   description:
     "Organized sparring in Los Angeles and Orange County. Free approved participation during the pilot. Optional footage, highlights and a growing fighter portfolio.",
-  robots: { index: false, follow: false },
+  robots: { index: indexable(), follow: indexable() },
   icons: { icon: "/brand/logo-stacked.png", apple: "/brand/logo-stacked.png" },
-};
+};}
 
 export default function RootLayout({
   children,
@@ -42,7 +44,7 @@ export default function RootLayout({
       className={`${display.variable} ${body.variable} ${mono.variable}`}
     >
       <body>
-        <SiteShell live={process.env.APPLICATIONS_OPEN==='true'}>{children}</SiteShell>
+        <SiteShell preview={process.env.SITE_PREVIEW==='true'}>{children}</SiteShell>
       </body>
     </html>
   );
