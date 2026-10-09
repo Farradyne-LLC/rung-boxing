@@ -1,7 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 export async function contact(page:Page,email='qa@example.com'){
  await page.goto('/apply?utm_source=qa&utm_campaign=v4');
- await page.locator('[name=first_name]').fill('QA');await page.locator('[name=email]').fill(email);await page.locator('[name=phone]').fill('2025550123');
+ await page.locator('[name=first_name]').fill('QA');await page.locator('[name=last_name]').fill('Test');await page.locator('[name=email]').fill(email);await page.locator('[name=phone]').fill('2025550123');
  await page.getByLabel('Month',{exact:true}).selectOption('04');await page.getByLabel('Day',{exact:true}).selectOption('12');await page.getByLabel('Year',{exact:true}).selectOption('1995');
  await page.getByRole('button',{name:'CONTINUE'}).click();await expect(page.getByRole('heading',{name:'YOUR BOXING.'})).toBeVisible();
 }

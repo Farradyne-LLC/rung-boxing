@@ -8,7 +8,7 @@ export const safeUrl = z.string().trim().max(1500).refine(v => {
 }, 'Use a valid HTTPS URL.');
 export const applicationSchema = z.object({
  request_id:z.uuid(), lead_token:z.string().regex(/^[a-f0-9]{64}$/).optional(), session_id:z.union([z.uuid(),z.literal('')]).default(''),
- first_name:text(80),last_name:z.string().trim().max(80).default(''),display_name:z.string().trim().max(100).default(''),date_of_birth:text(10).refine(v=>ageFromDob(v)!==null,'Enter a valid date of birth.'),
+ first_name:text(80),last_name:z.string().trim().min(1,'Enter your last name.').max(80),display_name:z.string().trim().max(100).default(''),date_of_birth:text(10).refine(v=>ageFromDob(v)!==null,'Enter a valid date of birth.'),
  email:z.email().max(254).transform(v=>v.toLowerCase()),phone:text(40),instagram:z.string().trim().max(100).default(''),city:text(100),gym:z.string().trim().max(160).default(''),
  height:z.coerce.number().min(36).max(100),current_weight:z.coerce.number().min(50).max(500),stance:z.enum(['Orthodox','Southpaw','Switch']),
  years_boxing:z.coerce.number().min(0).max(90),competition_experience:z.enum(['No fights','Amateur','Professional']),amateur_fights:z.coerce.number().int().min(0).max(1000),professional_fights:z.coerce.number().int().min(0).max(1000),
@@ -30,7 +30,7 @@ export function csvCell(value:unknown){return '"'+String(value??'').replace(/^[=
 
 export const contactSchema=z.object({
  request_id:z.uuid(),lead_token:z.string().regex(/^[a-f0-9]{64}$/),
- first_name:text(80),email:z.email().max(254).transform(v=>v.toLowerCase()),
+ first_name:text(80),last_name:z.string().trim().min(1,'Enter your last name.').max(80),email:z.email().max(254).transform(v=>v.toLowerCase()),
  phone:text(40).refine(v=>v.replace(/\D/g,'').length>=7,'Enter a valid phone number.'),
  date_of_birth:text(10).refine(v=>ageFromDob(v)!==null,'Enter a valid date of birth.'),
  marketing_consent:z.boolean().default(false),website:z.literal('').default(''),
