@@ -1,9 +1,11 @@
 import 'server-only';
+import {after} from 'next/server';
+import {flushNotifications} from './notifications';
 import {z} from 'zod';
 import {randomUUID} from 'node:crypto';
 import {mkdir,writeFile} from 'node:fs/promises';
 import path from 'node:path';
-import {admin,checkOrigin,failure,HttpError,rate} from './server';
+import {admin,checkOrigin,failure,HttpError,rate,env} from './server';
 import {applicationBody,preparePhotos} from './photos';
 import {fighterAccess} from './profile-access';
 import {transaction} from './postgres';
@@ -29,5 +31,6 @@ export async function managePhotos(req:Request,isAdmin:boolean){try{
   for(let i=0;i<ids.length;i++)await c.query('INSERT INTO fighter_photos(id,fighter_id,position,filename) VALUES($1,$2,$3,$4)',[ids[i],id,i,old.find(p=>p.id===ids[i])?.filename||ids[i]+'.webp']);
   await c.query('UPDATE fighters SET profile_photo_url=$1,cover_photo_url=$2,photo_version=photo_version+1,profile_published=false WHERE id=$3',[avatar,cover,id]);
   await c.query('INSERT INTO audit_log(actor,actor_label,action,entity_id,changes) VALUES($1,$2,$3,$4,$5)',[actor?.id||null,actor?.email||'Fighter via private editing link','PHOTOS_UPDATED',id,{photos:{before:old.map(p=>p.id),after:ids},avatar:{before:f.profile_photo_url,after:avatar},cover:{before:f.cover_photo_url,after:cover},profile_published:{before:f.profile_published,after:false}}]);
- });return Response.json({ok:true});
+ if(!actor)await c.query('INSERT INTO notification_outbox(dedupe_key,recipient,subject,body) VALUES($1,$2,$3,$4) ON CONFLICT(dedupe_key) DO NOTHING',['photo-review-'+id+'-'+(d.version+1),env('ADMIN_NOTIFICATION_EMAIL'),'Punch Mentality — profile photos need review',`A fighter updated their photos. Review the profile in ${env('ADMIN_URL')}/admin. Public display is paused until approval.`]);
+ });after(flushNotifications);return Response.json({ok:true});
  }catch(e){return failure(e);}}

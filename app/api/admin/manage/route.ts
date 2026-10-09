@@ -41,12 +41,13 @@ export async function POST(req:Request){try{
  }else if(action==='REMOVE_PROFILE_VIDEO'){
   const d=z.object({id:z.uuid()}).parse(input.data);await sql().query('DELETE FROM profile_media WHERE id=$1',[d.id]);
  }else if(action==='PROFILE'){
-  const d=z.object({id:z.uuid(),profile_photo_url:z.string().max(1500),profile_published:z.boolean()}).parse(input.data);
+  const d=z.object({id:z.uuid(),photo_version:z.number().int().nonnegative(),edit_version:z.number().int().nonnegative(),profile_photo_url:z.string().max(1500),profile_published:z.boolean()}).parse(input.data);
   if(d.profile_photo_url.startsWith('/api/photos/')){const p=await sql().query('SELECT id FROM fighter_photos WHERE id::text=$1 AND fighter_id=$2',[d.profile_photo_url.slice(12),d.id]);if(!p.rows.length)throw new HttpError(400,'Choose a photo belonging to this fighter.');}else safeUrl.parse(d.profile_photo_url);
   const f=result(await db().from('fighters').select('visibility,date_of_birth').eq('id',d.id).single());
   const apps=result(await db().from('applications').select('media_consent,guardian_required').eq('fighter_id',d.id));
   if(d.profile_published&&(f.visibility!=='PUBLIC'||!apps.length||apps.some(a=>!a.media_consent||a.guardian_required)))throw new HttpError(409,'Public profile requires adult media consent.');
-  result(await db().from('fighters').update({profile_photo_url:d.profile_photo_url||null,profile_published:d.profile_published}).eq('id',d.id).select('id').single());
+  const updated=await sql().query(`UPDATE fighters f SET profile_photo_url=$2,profile_published=$3,photo_version=photo_version+1 WHERE id=$1 AND photo_version=$4 AND edit_version=$5 AND (NOT $3 OR (visibility='PUBLIC' AND EXISTS(SELECT 1 FROM applications a WHERE a.fighter_id=f.id) AND NOT EXISTS(SELECT 1 FROM applications a WHERE a.fighter_id=f.id AND (NOT a.media_consent OR a.guardian_required)))) RETURNING id`,[d.id,d.profile_photo_url||null,d.profile_published,d.photo_version,d.edit_version]);
+   if(!updated.rows.length)throw new HttpError(409,'Profile changed or requires review. Reload before publishing.');
  }else if(action==='CONTENT'){
   const d=z.object({id:z.uuid(),content_status:z.enum(['NOT_STARTED','EDITING','DELIVERED'])}).parse(input.data);
   result(await db().from('orders').update({content_status:d.content_status}).eq('id',d.id).eq('payment_status','PAID').select('id').single());
