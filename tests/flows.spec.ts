@@ -17,7 +17,7 @@ test('step failures preserve details; reload restores draft; two acknowledgement
  await page.unroute('**/api/applications');await page.route('**/api/applications',r=>r.fulfill({status:201,json:{id:'mock'}}));await page.getByRole('button',{name:'SUBMIT APPLICATION'}).click();await expect(page.getByText('APPLICATION RECEIVED.',{exact:true})).toBeVisible();expect(await page.evaluate(()=>sessionStorage.getItem('punch-application-v4'))).toBeNull();
 });
 test('responsive video preserves frame and supports music toggle',async({page})=>{
- await page.goto('/');const v=page.locator('.hero-video');await expect(v).toHaveAttribute('src',page.viewportSize()!.width<=600?'/video/slow-mobile-v4.mp4':'/video/slow-desktop-v4.mp4');await expect(v).toHaveCSS('object-fit','contain');expect(await v.evaluate((el:HTMLVideoElement)=>el.muted&&el.autoplay&&el.loop&&el.playsInline)).toBe(true);
+ await page.goto('/');const v=page.locator('.hero-media-video');await expect(v).toHaveAttribute('src',page.viewportSize()!.width<=600?'/video/slow-mobile-v4.mp4':'/video/slow-desktop-v4.mp4');await expect(v).toHaveCSS('object-fit','contain');expect(await v.evaluate((el:HTMLVideoElement)=>el.muted&&el.autoplay&&el.loop&&el.playsInline)).toBe(true);
  await page.getByRole('button',{name:'MUSIC ON',exact:true}).click();await expect(page.getByRole('button',{name:'MUSIC OFF',exact:true})).toBeVisible();expect(await v.evaluate((el:HTMLVideoElement)=>el.muted)).toBe(false);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.emulateMedia({reducedMotion:'reduce'});await expect(v).toHaveCount(0);
 });
