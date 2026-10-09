@@ -2364,3 +2364,5 @@ textarea {
 .hero-control{background:#101010cc;color:#fff;border:1px solid #ffffff70;padding:12px;min-height:44px;font-size:11px;cursor:pointer}
 .hero-photo video{object-fit:contain;aspect-ratio:16/9}
 @media(max-width:600px){.hero-photo video{aspect-ratio:4/5}.hero-controls{right:12px;bottom:12px}.lead-first .form-grid{grid-template-columns:1fr}.dob-fields{grid-template-columns:1fr 1fr 1.3fr}}
+
+.session-example{margin-block:2rem 3rem}.session-example-video{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;background:#000;margin-top:1.5rem}
