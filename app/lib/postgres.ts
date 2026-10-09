@@ -9,7 +9,7 @@ let pool:Pool;
 export function sql(){if(!pool){const url=new URL(process.env.DATABASE_URL!);if(process.env.DB_PASSWORD_FILE)url.password=readFileSync(process.env.DB_PASSWORD_FILE,'utf8').trim();pool=new Pool({connectionString:url.toString(),max:8,connectionTimeoutMillis:5000,statement_timeout:15000});}return pool;}
 export async function transaction<T>(work:(client:PoolClient)=>Promise<T>){const c=await sql().connect();try{await c.query('BEGIN');const r=await work(c);await c.query('COMMIT');return r;}catch(e){await c.query('ROLLBACK');throw e;}finally{c.release();}}
 const tables=new Set(['fighters','applications','sessions','matchups','fighter_matchup_confirmations','orders','media','notification_outbox','stripe_events','rate_limits','audit_log','subscribers']);
-const functions=new Set(['take_rate_limit','submit_application','create_matchup','respond_matchup','reserve_order','record_payment','manage_matchup','subscribe_updates']);
+const functions=new Set(['take_rate_limit','submit_application','create_matchup','respond_matchup','reserve_order','reserve_content_order','record_payment','manage_matchup','subscribe_updates']);
 function ident(s:string){if(!/^[a-z_][a-z0-9_]*$/.test(s))throw new Error('Invalid identifier');return '"'+s+'"';}
 // Small server-only compatibility layer. Every value is a bound SQL parameter;
 // relation names are allowlisted and never come from HTTP input.
@@ -48,4 +48,4 @@ class Query {
  }catch(e){console.error('Database query failed',e instanceof Error?e.name:'Error');return {data:null,error:{message:e instanceof Error?e.message:'Database error'},count:null};}}
  then<A,B>(resolve:(v:Awaited<ReturnType<Query['execute']>>)=>A,reject?:(e:unknown)=>B){return this.execute().then(resolve,reject);}
 }
-export const postgres={from:(name:string)=>new Query(name),async rpc(name:string,args:Record<string,unknown>){try{if(!functions.has(name))throw new Error('Unknown function');const keys=Object.keys(args);const call=`public.${ident(name)}(${keys.map((k,i)=>`${ident(k)} => $${i+1}`).join(',')})`;const expression=name==='reserve_order'?`to_jsonb(${call})`:call;const r=await sql().query(`SELECT ${expression} AS value`,Object.values(args));return {data:r.rows[0].value,error:null};}catch(e){return {data:null,error:{message:e instanceof Error?e.message:'Database error'}};}}};
+export const postgres={from:(name:string)=>new Query(name),async rpc(name:string,args:Record<string,unknown>){try{if(!functions.has(name))throw new Error('Unknown function');const keys=Object.keys(args);const call=`public.${ident(name)}(${keys.map((k,i)=>`${ident(k)} => $${i+1}`).join(',')})`;const expression=['reserve_order','reserve_content_order'].includes(name)?`to_jsonb(${call})`:call;const r=await sql().query(`SELECT ${expression} AS value`,Object.values(args));return {data:r.rows[0].value,error:null};}catch(e){return {data:null,error:{message:e instanceof Error?e.message:'Database error'}};}}};
