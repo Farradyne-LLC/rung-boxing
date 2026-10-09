@@ -13,7 +13,7 @@ export async function boxing(page:Page){
 test('step failures preserve details; reload restores draft; two acknowledgements',async({page})=>{
  await page.route('**/api/leads',r=>r.fulfill({status:200,json:{saved:true}}));await contact(page);await page.reload();await expect(page.getByRole('heading',{name:'YOUR BOXING.'})).toBeVisible();await boxing(page);
  await expect(page.locator('input[type=checkbox]')).toHaveCount(2);await page.locator('[name=rules_accepted]').check();await page.locator('[name=content_accepted]').check();
- await page.route('**/api/applications',r=>r.fulfill({status:503,json:{error:'Temporary test outage'}}));await page.getByRole('button',{name:'SUBMIT APPLICATION'}).click();await expect(page.getByRole('alert')).toContainText('Temporary test outage');
+ await page.route('**/api/applications',r=>r.fulfill({status:503,json:{error:'Temporary test outage'}}));await page.getByRole('button',{name:'SUBMIT APPLICATION'}).click();await expect(page.locator('.form-error')).toContainText('Temporary test outage');
  await page.unroute('**/api/applications');await page.route('**/api/applications',r=>r.fulfill({status:201,json:{id:'mock'}}));await page.getByRole('button',{name:'SUBMIT APPLICATION'}).click();await expect(page.getByText('APPLICATION RECEIVED.',{exact:true})).toBeVisible();expect(await page.evaluate(()=>sessionStorage.getItem('punch-application-v4'))).toBeNull();
 });
 test('responsive video preserves frame and supports music toggle',async({page})=>{

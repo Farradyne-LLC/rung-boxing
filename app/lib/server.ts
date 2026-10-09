@@ -15,7 +15,7 @@ export function newToken(){return randomBytes(32).toString('base64url');}
 export function checkOrigin(req:Request){if(![origin(),process.env.ADMIN_URL].includes(req.headers.get('origin')||''))throw new HttpError(403,'Request origin is not allowed.');}
 export async function body(req:Request){checkOrigin(req);const raw=await req.text();if(raw.length>30000)throw new HttpError(413,'Request too large.');try{return JSON.parse(raw);}catch{throw new HttpError(400,'Invalid request.');}}
 export async function rate(req:Request,scope:string,limit=10){
- // Vercel overwrites this header at the edge; do not trust client x-forwarded-for.
+ // The trusted reverse proxy overwrites this header; never trust client x-forwarded-for.
  const ip=req.headers.get('x-punch-client-ip')||'untrusted';
  const {data,error}=await db().rpc('take_rate_limit',{p_key:hash(scope+':'+(ip||'unknown')),p_limit:limit,p_seconds:900});
  if(error)throw new HttpError(503,'Please try again later.');if(!data)throw new HttpError(429,'Too many requests. Please try again in 15 minutes.');
