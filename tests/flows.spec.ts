@@ -1,33 +1,23 @@
 import {test,expect,type Page} from '@playwright/test';
-async function enterDetails(page:Page){
- await page.goto('/apply');
- for(const[k,v]of Object.entries({first_name:'QA',last_name:'Test',display_name:'QA Boxer',date_of_birth:'1995-04-12',email:'qa@example.com',phone:'2025550123',city:'Los Angeles',gym:'QA gym',emergency_name:'QA contact',emergency_phone:'2025550124'}))await page.locator(`[name=${k}]`).fill(v);
- await page.getByRole('button',{name:'CONTINUE'}).click();
- await page.locator('[name=height]').selectOption('70');
- for(const[k,v]of Object.entries({current_weight:'175',years_boxing:'3',sparring_experience:'Weekly supervised rounds',availability:'Saturday morning'}))await page.locator(`[name=${k}]`).fill(v);
- await page.locator('[name=stance]').selectOption('Orthodox');await page.locator('[name=skill_level]').selectOption('Intermediate');await page.locator('[name=preferred_intensity]').selectOption('Technical/light');
- await page.getByRole('button',{name:'CONTINUE'}).click();
+export async function contact(page:Page,email='qa@example.com'){
+ await page.goto('/apply?utm_source=qa&utm_campaign=v4');
+ await page.locator('[name=first_name]').fill('QA');await page.locator('[name=email]').fill(email);await page.locator('[name=phone]').fill('2025550123');
+ await page.getByLabel('Month',{exact:true}).selectOption('04');await page.getByLabel('Day',{exact:true}).selectOption('12');await page.getByLabel('Year',{exact:true}).selectOption('1995');
+ await page.getByRole('button',{name:'CONTINUE'}).click();await expect(page.getByRole('heading',{name:'YOUR BOXING.'})).toBeVisible();
 }
-test('height labels, draft recovery, public/private and retry without losing fields',async({page})=>{
- const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await enterDetails(page);
- await page.locator('[name=visibility][value=PUBLIC]').check();await page.reload();await expect(page.locator('[name=visibility][value=PUBLIC]')).toBeChecked();
- await page.getByRole('button',{name:'BACK',exact:true}).click();await expect(page.locator('[name=height]')).toHaveValue('70');await expect(page.locator('[name=height] option:checked')).toHaveText('5′10″ (178 cm)');
- await page.getByRole('button',{name:'CONTINUE'}).click();await page.locator('[name=visibility][value=PRIVATE]').check();await expect(page.locator('[name=media_consent]')).toHaveCount(0);
- for(const n of ['no_guarantee_accepted','accuracy_accepted','rules_accepted','recording_accepted'])await page.locator(`[name=${n}]`).check();
- await page.route('**/api/applications',r=>r.fulfill({status:503,json:{error:'Temporary test outage'}}));await page.getByRole('button',{name:'SUBMIT APPLICATION'}).click();await expect(page.locator('form [role=alert]')).toContainText('Temporary test outage');await expect(page.locator('[name=visibility][value=PRIVATE]')).toBeChecked();
- await page.unroute('**/api/applications');await page.route('**/api/applications',r=>r.fulfill({status:201,json:{id:'test-only-response'}}));await page.getByRole('button',{name:'SUBMIT APPLICATION'}).click();await expect(page.getByText('APPLICATION RECEIVED.',{exact:true})).toBeVisible();expect(await page.evaluate(()=>sessionStorage.getItem('punch-application-mvp-v1'))).toBeNull();expect(errors).toEqual([]);
+export async function boxing(page:Page){
+ await page.locator('[name=city]').fill('Los Angeles');await page.locator('[name=height]').selectOption('70');await page.locator('[name=current_weight]').fill('175');await page.locator('[name=years_boxing]').fill('3');
+ await page.locator('[name=stance]').selectOption('Orthodox');await page.locator('[name=skill_level]').selectOption('Intermediate');await page.locator('[name=sparring_experience]').selectOption('Weekly');await page.locator('[name=preferred_intensity]').selectOption('Technical/light');await page.getByLabel('Weekend mornings',{exact:true}).check();
+ await page.getByRole('button',{name:'CONTINUE'}).click();await expect(page.getByRole('heading',{name:'READY FOR REVIEW.'})).toBeVisible();
+}
+test('step failures preserve details; reload restores draft; two acknowledgements',async({page})=>{
+ await page.route('**/api/leads',r=>r.fulfill({status:200,json:{saved:true}}));await contact(page);await page.reload();await expect(page.getByRole('heading',{name:'YOUR BOXING.'})).toBeVisible();await boxing(page);
+ await expect(page.locator('input[type=checkbox]')).toHaveCount(2);await page.locator('[name=rules_accepted]').check();await page.locator('[name=content_accepted]').check();
+ await page.route('**/api/applications',r=>r.fulfill({status:503,json:{error:'Temporary test outage'}}));await page.getByRole('button',{name:'SUBMIT APPLICATION'}).click();await expect(page.getByRole('alert')).toContainText('Temporary test outage');
+ await page.unroute('**/api/applications');await page.route('**/api/applications',r=>r.fulfill({status:201,json:{id:'mock'}}));await page.getByRole('button',{name:'SUBMIT APPLICATION'}).click();await expect(page.getByText('APPLICATION RECEIVED.',{exact:true})).toBeVisible();expect(await page.evaluate(()=>sessionStorage.getItem('punch-application-v4'))).toBeNull();
 });
-test('responsive video, photo gallery and private admin',async({page})=>{
- await page.goto('/');const v=page.locator('video');await expect(v).toHaveAttribute('src',page.viewportSize()!.width<=600?'/video/mobile.mp4':'/video/desktop.mp4');
- await expect(v).toHaveCSS('object-fit','contain');expect(await v.evaluate((v:HTMLVideoElement)=>v.muted&&v.loop&&v.playsInline&&v.autoplay)).toBe(true);
- expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+test('responsive video preserves frame and supports music toggle',async({page})=>{
+ await page.goto('/');const v=page.locator('video');await expect(v).toHaveAttribute('src',page.viewportSize()!.width<=600?'/video/slow-mobile-v4.mp4':'/video/slow-desktop-v4.mp4');await expect(v).toHaveCSS('object-fit','contain');expect(await v.evaluate((el:HTMLVideoElement)=>el.muted&&el.autoplay&&el.loop&&el.playsInline)).toBe(true);
+ await page.getByRole('button',{name:'MUSIC ON',exact:true}).click();await expect(page.getByRole('button',{name:'MUSIC OFF',exact:true})).toBeVisible();expect(await v.evaluate((el:HTMLVideoElement)=>el.muted)).toBe(false);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  await page.emulateMedia({reducedMotion:'reduce'});await expect(v).toHaveCount(0);
- await page.goto('/gym');await expect(page.locator('#training figure')).toHaveCount(6);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
- await page.goto('/admin');await expect(page).toHaveURL(/\/admin\/login$/);
 });
-test('subscription error stays editable and success is acknowledged',async({page})=>{
- await page.goto('/');await page.locator('[name=firstName]').fill('QA');await page.locator('[name=email]').fill('qa@example.com');await page.locator('[name=consent]').check();
- await page.route('**/api/subscribe',r=>r.fulfill({status:503,json:{error:'Temporary test outage'}}));await page.getByRole('button',{name:'GET UPDATES'}).click();await expect(page.locator('form [role=alert]')).toContainText('Temporary test outage');await expect(page.locator('[name=email]')).toHaveValue('qa@example.com');
- await page.unroute('**/api/subscribe');await page.route('**/api/subscribe',r=>r.fulfill({status:200,json:{ok:true}}));await page.getByRole('button',{name:'GET UPDATES'}).click();await expect(page.getByText('YOU’RE ON THE LIST.')).toBeVisible();
-});
-

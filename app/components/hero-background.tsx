@@ -5,6 +5,7 @@ import { heroMedia } from "../lib/hero-media";
 
 export default function HeroBackground() {
   const [source, setSource] = useState("");
+  const [muted, setMuted] = useState(true);
   const [failed, setFailed] = useState(false);
   const [playing, setPlaying] = useState(false);
   const video = useRef<HTMLVideoElement>(null);
@@ -21,6 +22,7 @@ export default function HeroBackground() {
       );
       setFailed(false);
       setPlaying(false);
+      setMuted(true);
     }
     chooseSource();
     mobile.addEventListener("change", chooseSource);
@@ -58,7 +60,7 @@ export default function HeroBackground() {
             src={source}
             poster={heroMedia.poster}
             autoPlay
-            muted
+            muted={muted}
             loop
             playsInline
             preload="metadata"
@@ -72,16 +74,16 @@ export default function HeroBackground() {
       </div>
       <div className="hero-shade" aria-hidden="true" />
       {source && !failed && (
-        <button
+        <div className="hero-controls"><button
           type="button"
-          className="hero-video-toggle"
+          className="hero-control"
           onClick={toggle}
           aria-label={
             playing ? "Pause background video" : "Play background video"
           }
         >
           {playing ? "PAUSE VIDEO" : "PLAY VIDEO"}
-        </button>
+        </button><button type="button" className="hero-control" aria-pressed={!muted} onClick={()=>{if(video.current){video.current.muted=!muted;setMuted(!muted);void video.current.play().catch(()=>setPlaying(false));}}}>{muted?'MUSIC ON':'MUSIC OFF'}</button></div>
       )}
     </>
   );

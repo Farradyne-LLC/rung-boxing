@@ -2344,3 +2344,23 @@ textarea {
 .admin-workspace .photo-gallery { grid-template-columns:repeat(auto-fit,minmax(180px,260px)); }
 @media(max-width:1000px) { .applicant-details { grid-template-columns:1fr 1fr; } }
 @media(max-width:640px) { .applicant-details,.admin-workspace .compare-grid { grid-template-columns:1fr; } .applicant-header { flex-wrap:wrap; gap:12px; } .applicant-header .status-badge { margin-left:0; } .admin-workspace .workspace-nav { gap:16px; } }
+/* V4: compact lead capture, boxing-first operations, uncropped media. */
+.step-progress{display:flex;gap:12px;margin-bottom:24px;font-size:12px;font-weight:700}
+.step-progress span{flex:1;padding:10px 0;border-bottom:3px solid #b8b8ac;color:#646459}
+.step-progress .active{border-color:#b00016;color:#81101b}
+.lead-first h2{scroll-margin-top:120px}
+.dob-picker{border:0;padding:0;min-width:0}
+.dob-fields{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:8px}
+.dob-fields select{padding-left:8px;padding-right:4px}
+.availability{border:0;padding:12px 0}
+.form-panel .choice-chip{display:inline-flex;align-items:center;gap:8px;border:1px solid #97998a;padding:12px;margin:8px 8px 0 0;cursor:pointer}
+.form-panel .choice-chip input{width:20px;height:20px;min-height:20px;margin:0;accent-color:#ac0015}
+.optional-details{border-top:1px solid #aaa99c;padding:20px 0}
+.optional-details summary{cursor:pointer;font-weight:700}
+.optional-details .form-grid{margin-top:20px}
+.pair-actions{display:flex;gap:8px}.pair-actions a{border:1px solid #959882;padding:8px 12px;font-weight:700}
+.comparison{width:100%;border-collapse:collapse}.comparison th,.comparison td{text-align:left;border-bottom:1px solid #ffffff25;padding:8px;font-size:13px}.comparison th{color:#a9ac98;width:45%}
+.hero-controls{position:absolute;right:24px;bottom:20px;z-index:6;display:flex;gap:8px}
+.hero-control{background:#101010cc;color:#fff;border:1px solid #ffffff70;padding:12px;min-height:44px;font-size:11px;cursor:pointer}
+.hero-photo video{object-fit:contain;aspect-ratio:16/9}
+@media(max-width:600px){.hero-photo video{aspect-ratio:4/5}.hero-controls{right:12px;bottom:12px}.lead-first .form-grid{grid-template-columns:1fr}.dob-fields{grid-template-columns:1fr 1fr 1.3fr}}
