@@ -8,7 +8,7 @@ BEGIN
  SELECT * INTO m FROM matchups WHERE id=p_matchup FOR UPDATE;
  IF m.id IS NULL OR length(trim(m.content_terms))<30 OR m.content_terms_version<>p_terms_version THEN RAISE EXCEPTION 'Order details need confirmation'; END IF;
  SELECT * INTO o FROM reserve_order(p_matchup,p_fighter);
- UPDATE orders SET terms_snapshot=coalesce(terms_snapshot,m.content_terms),terms_accepted_at=coalesce(terms_accepted_at,now()) WHERE id=o.id RETURNING * INTO o;
+ UPDATE orders SET terms_snapshot=m.content_terms,terms_accepted_at=now() WHERE id=o.id RETURNING * INTO o;
  RETURN o;
 END $$;
 GRANT EXECUTE ON FUNCTION reserve_content_order(uuid,uuid,integer) TO rung_app;

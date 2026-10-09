@@ -1,6 +1,6 @@
 import ApplicationForm from './application-form';
 import {db,dbReady,liveReady,result} from '../lib/server';
-export const metadata={title:'Apply to spar'};
+export const metadata={title:'Apply to spar',alternates:{canonical:'https://punchmentality.com/apply'}};
 export const dynamic='force-dynamic';
 export default async function Apply({searchParams}:{searchParams:Promise<{session?:string}>}){
  const params=await searchParams;
