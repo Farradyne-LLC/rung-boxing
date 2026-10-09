@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 export function Arrow() {
   return (
@@ -27,52 +28,14 @@ export function SectionLabel({
   );
 }
 export function ProfileCard() {
-  return (
-    <article className="profile-card">
-      <div className="profile-card-head">
-        <span className="mono">FIGHTER PORTFOLIO</span>
-        <span className="pill">SAMPLE PROFILE</span>
-      </div>
-      <div className="profile-identity">
-        <div className="avatar" aria-hidden="true">
-          PM
-        </div>
-        <div>
-          <span className="small-tag">YOUR STORY IN ROUNDS</span>
-          <h3>YOUR NAME.</h3>
-          <p>Weight · Stance · Home gym</p>
-        </div>
-      </div>
-      <div className="profile-stats">
-        <div>
-          <strong>—</strong>
-          <span>SESSIONS</span>
-        </div>
-        <div>
-          <strong>—</strong>
-          <span>ROUNDS</span>
-        </div>
-        <div>
-          <strong>—</strong>
-          <span>RECORDED</span>
-        </div>
-      </div>
-      <div className="profile-entry">
-        <span className="session-icon">01</span>
-        <div>
-          <b>YOUR FIRST CHAPTER</b>
-          <p>Your completed session will appear here.</p>
-        </div>
-        <Arrow />
-      </div>
-      <div className="profile-card-bottom">
-        <span>REAL PARTICIPATION. LASTING HISTORY.</span>
-        <Link href="/fighters/demo" aria-label="Explore sample fighter profile">
-          <Arrow />
-        </Link>
-      </div>
-    </article>
-  );
+  return <article className="profile-card iron-mike-card">
+    <div className="profile-card-head"><span className="mono">FIGHTER PORTFOLIO</span><span className="pill">SAMPLE PROFILE</span></div>
+    <Image className="sample-portrait" src="/images/sample-profile/iron-mike.jpg" width={736} height={919} sizes="(max-width: 760px) 92vw, 600px" alt="Mike Tyson in a black-and-white portrait"/>
+    <div className="profile-identity"><div><span className="small-tag">THE NEW KID AT THE GYM</span><h3>IRON MIKE.</h3><p>18 YEARS OLD · HEAVYWEIGHT · ORTHODOX</p><p className="sample-quote">“Looking for easy rounds.”</p></div></div>
+    <div className="profile-stats"><div><strong>10</strong><span>SESSIONS</span></div><div><strong>30</strong><span>ROUNDS</span></div><div><strong>100%</strong><span>DOCUMENTED</span></div></div>
+    <section className="sample-chapters" aria-label="Sample session thumbnails"><h4>YOUR FIRST CHAPTER</h4><div className="sample-thumbnails">{['THE FIRST BELL','FINDING THE RHYTHM','ONE MORE ROUND'].map((title,i)=><figure key={title}><div className="sample-thumbnail"><Image src="/images/sample-profile/demo-rounds.png" width={2048} height={688} sizes="(max-width: 760px) 92vw, 600px" alt={['Illustrated demo: boxer in guard inside a ring','Illustrated demo: pad work with a trainer','Illustrated demo: boxer between rounds'][i]} style={{left:`-${i*100}%`}}/><span className="sample-demo-tag">DEMO {String(i+1).padStart(2,'0')}</span></div><figcaption>{title}</figcaption></figure>)}</div><p className="sample-disclaimer">Fictional sample profile. Age and stats are illustrative. AI-generated thumbnails — no playable videos or affiliation implied.</p></section>
+    <div className="profile-card-bottom"><span>NO SCORECARDS. JUST WORK.</span><Link href="/watch" aria-label="Watch real Punch Mentality sessions"><Arrow/></Link></div>
+  </article>;
 }
 export const faqItems = [
   [
