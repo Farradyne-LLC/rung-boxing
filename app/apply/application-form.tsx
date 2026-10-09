@@ -1,5 +1,5 @@
 'use client';
-import {useRef,useState,type FormEvent} from 'react';
+import {useEffect,useRef,useState,type FormEvent} from 'react';
 import Link from 'next/link';
 import HeightSelect from '../components/height-select';
 import {ageFromDob} from '../lib/application';
@@ -12,6 +12,8 @@ export default function ApplicationForm({sessions,sessionId,open}:{sessions:{id:
  const [step,setStep]=useState(0),[error,setError]=useState(''),[busy,setBusy]=useState(false),[received,setReceived]=useState(false);
  const [d,setD]=useState<Record<string,string|boolean>>({session_id:sessionId,amateur_fights:'0',professional_fights:'0',visibility:'PUBLIC',media_consent:false,marketing_consent:false,competition_experience:'No fights',website:''});
  const requestId=useRef('');const token=useRef('');const started=useRef(false);const heading=useRef<HTMLHeadingElement>(null);
+ const errorMessage=useRef<HTMLParagraphElement>(null);
+ useEffect(()=>{if(error){errorMessage.current?.focus();errorMessage.current?.scrollIntoView({block:'center',behavior:'smooth'});}},[error]);
  const [privateRequested,setPrivateRequested]=useState(false);
  const [photos,setPhotos]=useState<File[]>([]);
  const draft=useApplicationDraft('punch-application-v4',d,step,received,(saved,savedStep)=>{setD(old=>({...old,...saved}));setStep(String(saved.last_name||'').trim()?savedStep:0);requestId.current=String(saved.request_id||'');token.current=String(saved.lead_token||'');},2);
@@ -62,6 +64,6 @@ export default function ApplicationForm({sessions,sessionId,open}:{sessions:{id:
    <label className="full">Profile photos (optional, up to 3)<input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={e=>{const files=Array.from(e.target.files||[]);if(files.length>3||files.some(f=>f.size>5*1024*1024)){setError('Choose up to 3 photos, maximum 5 MB each.');e.target.value='';setPhotos([]);}else{setPhotos(files);setError('');}}}/><span className="fine">JPEG, PNG or WebP · up to 5 MB each. You can add these later. Reselect files after a reload.</span></label>
   </>}
   </div><div className="honeypot" aria-hidden="true"><label>Leave empty<input name="website" tabIndex={-1} autoComplete="off" value={String(d.website)} onChange={e=>update('website',e.target.value)}/></label></div>
-  {error&&<p className="form-error" role="alert">{error}</p>}<div className="form-actions">{step>0&&<button type="button" className="button outline" disabled={busy} onClick={()=>go(step-1)}>BACK</button>}<button className="button red" disabled={busy||!open}>{busy?'SAVING…':step===2?'SUBMIT APPLICATION':'CONTINUE →'}</button></div>
+  {error&&<p ref={errorMessage} tabIndex={-1} className="form-error" role="alert">{error}</p>}<div className="form-actions">{step>0&&<button type="button" className="button outline" disabled={busy} onClick={()=>go(step-1)}>BACK</button>}<button className="button red" disabled={busy||!open}>{busy?'SAVING…':step===2?'SUBMIT APPLICATION':'CONTINUE →'}</button></div>
  </form>;
 }

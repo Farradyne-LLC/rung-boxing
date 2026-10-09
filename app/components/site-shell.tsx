@@ -1,12 +1,21 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Arrow } from "./ui";
 export default function SiteShell({ children, live=false }: { children: React.ReactNode;live?:boolean }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const menuButton = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") { setOpen(false); menuButton.current?.focus(); }
+    }
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [open]);
   return (
     <>
       <a href="#main" className="skip-link">
@@ -36,6 +45,7 @@ export default function SiteShell({ children, live=false }: { children: React.Re
             />
           </Link>
           <nav
+            id="main-navigation"
             aria-label="Main navigation"
             className={open ? "nav-links open" : "nav-links"}
           >
@@ -60,6 +70,8 @@ export default function SiteShell({ children, live=false }: { children: React.Re
           </Link>
           <button
             className="menu-toggle"
+            ref={menuButton}
+            aria-controls="main-navigation"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             onClick={() => setOpen(!open)}

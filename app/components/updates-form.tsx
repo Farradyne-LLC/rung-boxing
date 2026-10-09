@@ -18,7 +18,7 @@ export default function UpdatesForm() {
             Your subscription has been saved. We will share Punch session news and updates.
           </p>
           <button className="text-link" onClick={() => setDone(false)}>
-            TRY AGAIN <Arrow />
+            ADD ANOTHER EMAIL <Arrow />
           </button>
         </div>
       ) : (
@@ -45,13 +45,14 @@ export default function UpdatesForm() {
                 maxLength={254}
               />
             </label>
+
+          </div>
+          <label className="check-row"><input type="checkbox" name="consent" required/><span>I would like to receive Punch Mentality news and session updates by email.</span></label>
             <button type="submit" className="button red" disabled={busy}>
               {busy?'SAVING…':'GET UPDATES'} <Arrow />
             </button>
-          </div>
-          <label className="check-row"><input type="checkbox" name="consent" required/><span>I would like to receive Punch Mentality news and session updates by email.</span></label>
           <div className="honeypot" aria-hidden="true"><input aria-label="Leave empty" name="website" tabIndex={-1} autoComplete="off"/></div>
-          {error&&<p role="alert">{error}</p>}
+          {error&&<p className="form-error" role="alert">{error}</p>}
           <p className="fine">
             Separate from a fighter application. See our <a href="/privacy">privacy notice</a>.
           </p>
