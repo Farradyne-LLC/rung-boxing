@@ -53,7 +53,7 @@ export default function SiteShell({ children, live=false }: { children: React.Re
               ["THE EXPERIENCE", "/#experience"],
               ["HOW IT WORKS", "/#how"],
               ["THE GYM", "/gym"],
-              ["THE CONTENT", "/#footage"],
+              ["SESSIONS", "/sessions"],
             ].map(([text, href]) => (
               <Link key={href} href={href} onClick={() => setOpen(false)}>
                 {text}

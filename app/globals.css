@@ -2447,3 +2447,30 @@ section[id] { scroll-margin-top:90px; }
  .iron-mike-card .profile-identity p{font-size:12px;line-height:1.6}
  .iron-mike-card .profile-identity .sample-quote{font-size:14px;margin-top:12px}
 }
+
+/* V6: concise community homepage; film and controls have their own space. */
+.rounds-hero{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:48px;align-items:center;padding-block:48px}
+.rounds-intro{min-width:0}.rounds-intro h1{font-size:clamp(64px,7vw,104px);line-height:.92;margin:20px 0 24px}.rounds-intro h1 span{color:var(--red)}
+.rounds-description{font-size:20px;color:var(--bone);line-height:1.5;margin-bottom:12px}.rounds-detail{max-width:440px;font-size:14px;line-height:1.6}
+.rounds-actions{display:flex;gap:12px;margin-top:26px}.rounds-actions .button{font-size:12px;padding:14px 18px;gap:18px;white-space:nowrap}
+.rounds-free{font-size:12px;margin:14px 0 0;color:#b8b8ad}
+.hero-media{min-width:0}.hero-media-frame{position:relative;aspect-ratio:16/9;background:#080808;overflow:hidden}
+.hero-media-frame img,.hero-media-frame video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center}
+.media-controls{position:static;display:flex;justify-content:flex-end;gap:0;border:1px solid #3a3a35;border-top:0;background:#151513}
+.media-controls .hero-control{position:static;flex:0 1 160px;min-height:44px;border:0;border-left:1px solid #3a3a35;background:transparent;color:var(--bone);font-size:11px}
+.rounds-benefits{border-block:1px solid #34342f}.rounds-benefits .shell{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding-block:18px;text-align:center;font:11px var(--font-mono);gap:12px}.rounds-benefits span+span{border-left:1px solid #34342f}
+.community-compact{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start}.community-compact h2{font-size:clamp(36px,4vw,58px)}
+.gym-compact{display:flex;align-items:center;gap:18px;margin-top:24px;font-size:11px;line-height:1.8}.gym-compact img{width:100px;height:68px;object-fit:cover}.gym-compact strong{font-size:14px}
+.rounds-steps{list-style:none;padding:0;margin:0}.rounds-steps li{display:flex;gap:22px;border-top:1px solid #aaa99c;padding:18px 0}.rounds-steps li>.mono{font-size:12px;color:#970019;padding-top:5px}.rounds-steps h3{font-size:25px;margin:0 0 4px}.rounds-steps p{font-size:14px;margin:0}
+.next-session-compact{display:flex;justify-content:space-between;align-items:center;gap:24px;padding-block:36px;border-bottom:1px solid #34342f}.next-session-compact h2{font-size:40px;margin:10px 0}
+.pack-compact{display:grid;grid-template-columns:.8fr 1.2fr;gap:64px;align-items:start}.pack-compact h2{font-size:clamp(40px,4.5vw,64px)}.pack-compact .pack-price{margin:24px 0;font-size:64px}.pack-compact .pack-price small{margin-top:12px;line-height:1.7}
+.real-round-thumbnail{display:block;aspect-ratio:16/9}.real-round-thumbnail img{display:block;width:100%;height:100%;object-fit:contain}.sample-disclaimer a{text-decoration:underline;text-underline-offset:3px}
+.home-questions,.home-updates{padding:24px 0}.faq-group>summary,.updates-disclosure>summary{display:flex;align-items:center;justify-content:space-between;gap:24px;list-style:none;cursor:pointer;min-height:48px;font-weight:700;font-size:16px}.faq-group>summary::-webkit-details-marker,.updates-disclosure>summary::-webkit-details-marker{display:none}.faq-group-toggle{font-size:26px;font-weight:400}.faq-group[open] .faq-group-toggle{transform:rotate(45deg)}.faq-group-content{padding-top:12px}.home-questions .faq-item{padding:12px 0}.home-questions .faq-item p{max-width:780px;line-height:1.7}
+.final-compact{display:flex;align-items:center;justify-content:space-between;gap:32px}.final-compact h2{margin-bottom:0}.updates-disclosure .updates-form,.updates-disclosure .updates-success{padding-top:24px}.updates-disclosure>summary{font-size:13px}
+@media(max-width:1000px){.rounds-hero{gap:24px}.rounds-actions .button{padding:12px;font-size:11px;gap:12px}.pack-compact,.community-compact{gap:32px}}
+@media(max-width:760px){
+ .rounds-hero{grid-template-columns:1fr;gap:24px;padding-block:28px}.rounds-intro h1{font-size:clamp(56px,14vw,80px);margin:16px 0}.rounds-description{font-size:17px;margin-bottom:8px}.rounds-detail{font-size:13px;margin:0}.rounds-actions{display:grid;grid-template-columns:1.2fr 1fr;margin-top:20px;gap:10px}.rounds-actions .button{justify-content:center;min-height:48px;font-size:11px;padding:12px 8px;gap:10px}.rounds-free{font-size:12px;margin-top:12px}
+ .rounds-benefits .shell{font-size:9px;letter-spacing:0;gap:6px;padding-block:16px}.rounds-benefits span{line-height:1.5;align-self:center}
+ .community-compact,.pack-compact{grid-template-columns:1fr;gap:32px}.community-compact h2{font-size:36px}.rounds-steps li{padding:12px 0}.rounds-steps p{font-size:13px}.rounds-steps h3{font-size:23px}.pack-compact .pack-price{font-size:54px;margin:16px 0}.pack-compact h2{font-size:38px}.next-session-compact,.final-compact{flex-direction:column;align-items:stretch}.home-questions,.home-updates{padding:18px 0}
+}
+@media(max-width:600px){.hero-media-frame{aspect-ratio:4/5}.media-controls{justify-content:stretch}.media-controls .hero-control{flex:1}.rounds-benefits .shell{font-size:10px}.rounds-actions .button svg{width:14px}}

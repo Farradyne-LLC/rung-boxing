@@ -43,20 +43,20 @@ export default function HeroBackground() {
     } else video.current.pause();
   }
   return (
-    <>
-      <div className="hero-photo">
+    <div className="hero-media">
+      <div className="hero-media-frame">
         <Image
           src={heroMedia.poster}
           alt="Punch Mentality technical sparring inside the Dalakian boxing ring"
           fill
           priority
-          sizes="100vw"
+          sizes="(max-width: 760px) 92vw, 55vw"
         />
         {source && !failed && (
           <video
             key={source}
             ref={video}
-            className="hero-video"
+            className="hero-media-video"
             src={source}
             poster={heroMedia.poster}
             autoPlay
@@ -72,9 +72,8 @@ export default function HeroBackground() {
           />
         )}
       </div>
-      <div className="hero-shade" aria-hidden="true" />
       {source && !failed && (
-        <div className="hero-controls"><button
+        <div className="media-controls"><button
           type="button"
           className="hero-control"
           onClick={toggle}
@@ -85,6 +84,6 @@ export default function HeroBackground() {
           {playing ? "PAUSE VIDEO" : "PLAY VIDEO"}
         </button><button type="button" className="hero-control" aria-pressed={!muted} onClick={()=>{if(video.current){video.current.muted=!muted;setMuted(!muted);void video.current.play().catch(()=>setPlaying(false));}}}>{muted?'MUSIC ON':'MUSIC OFF'}</button></div>
       )}
-    </>
+    </div>
   );
 }
