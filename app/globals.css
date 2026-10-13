@@ -2533,3 +2533,10 @@ section[id] { scroll-margin-top:90px; }
 .service-example{display:block}.service-example img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain}.service-example span{display:block;padding:18px;border:1px solid #555}
 .audit-json{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}.service-page section{min-width:0}#watch{scroll-margin-top:120px}
 @media(max-width:760px){.service-columns,.service-card-grid{grid-template-columns:1fr}.service-form-panel{padding:22px 18px}.service-request-form .form-grid{grid-template-columns:1fr}.service-page>h1{font-size:clamp(46px,13vw,76px)}}
+/* Organizer tables retain readable columns on narrow screens. */
+.pm-layout .table-scroll { overflow-x:auto; overscroll-behavior-inline:contain; border:1px solid #35362f; border-radius:6px; }
+.pm-layout .table-scroll table { min-width:1000px; font-size:14px; background:#131410; }
+.pm-layout .table-scroll th { white-space:nowrap; font-size:12px; color:#c2c4b7; background:#20211c; }
+.pm-layout .table-scroll th:first-child,.pm-layout .table-scroll td:first-child { position:sticky; left:0; z-index:1; min-width:140px; background:#20211c; }
+.pm-layout .table-scroll td { vertical-align:middle; }
+.pm-layout .table-scroll button:disabled { opacity:.35; cursor:not-allowed; }
