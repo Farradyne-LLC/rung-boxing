@@ -21,11 +21,13 @@ const hash=s=>createHash('sha256').update(s).digest('hex');
  const input={instagram:'qa_boxer',notes:'',video_url:'',emergency_name:'',emergency_phone:'',guardian_name:'',guardian_contact:'',first_name:'Sandbox',last_name:'Boxer',display_name:'Sandbox',date_of_birth:'1995-01-01',email:'qa-stripe@example.com',phone:'2025550100',city:'LA',gym:'',height:70,current_weight:175,stance:'Orthodox',years_boxing:3,amateur_fights:0,professional_fights:0,competition_experience:'No fights',sparring_experience:'Weekly',skill_level:'Intermediate',visibility:'PRIVATE',availability:'Weekend mornings',preferred_intensity:'Technical/light',media_consent:false,rules_accepted:true,accuracy_accepted:true,no_guarantee_accepted:true,recording_accepted:true,terms_version:'test'};
  const ids=[];for(let i=0;i<2;i++)ids.push((await db.query('SELECT submit_application($1,$2,$3,$4) id',[{...input,first_name:'Sandbox'+i},randomUUID(),'preview@example.com',process.env.APP_URL])).rows[0].id);
  const sid=(await db.query("INSERT INTO sessions(title,slug,date,start_time,location_name,city) VALUES('Synthetic QA session',$1,current_date+7,'12:00','Test venue','Los Angeles') RETURNING id",['qa-'+randomUUID()])).rows[0].id;
- let r=await req('/api/admin/manage',{action:'MATCHUP',data:{application_a_id:ids[0],application_b_id:ids[1],session_id:sid,rounds:3,round_length:180,internal_notes:'Sandbox only'}},true);const made=await r.json();assert.equal(r.status,200,JSON.stringify(made));
- const m=made.data||made.value||made;const token=m.link_a.split('/').pop(),tokenB=m.link_b.split('/').pop();const checkout={token,accept_terms:true,terms_version:1};
+ const token=randomBytes(32).toString('base64url'),tokenB=randomBytes(32).toString('base64url');
+ const mid=(await db.query('SELECT create_matchup($1,$2,$3,3,180,$4,$5,$6,$7,$8,$9) id',[ids[0],ids[1],sid,'Sandbox only',hash(token),hash(tokenB),process.env.APP_URL+'/match/'+token,process.env.APP_URL+'/match/'+tokenB,user.id])).rows[0].id;
+ const m={id:mid};let r;const checkout={token,accept_terms:true,terms_version:1};
  assert.equal((await req('/api/checkout',checkout)).status,409);
  for(const t of [token,tokenB]){r=await req('/api/match/respond',{token:t,accept:true,emergency_name:'QA Contact',emergency_phone:'2025550101'});assert.equal(r.status,200,await r.text());}
  assert.equal((await req('/api/checkout',checkout)).status,409);
+ r=await req('/api/admin/platform',{action:'CONFIRM',data:{id:m.id,revision:0}},true);assert.equal(r.status,200,await r.text());
  r=await req('/api/admin/manage',{action:'CONTENT_TERMS',data:{id:m.id,version:0,content_terms:'SANDBOX TEST ONLY. One agreed sparring recording and one shared vertical reel. Three correction rounds. Google Drive delivery. Synthetic test terms; no real service or payment.'}},true);assert.equal(r.status,200,await r.text());
  assert.equal((await req('/api/checkout',{...checkout,accept_terms:false})).status,400);
  r=await req('/api/checkout',checkout);const payment=await r.json();assert.equal(r.status,200,JSON.stringify(payment));assert(payment.url.startsWith('https://checkout.stripe.com/'));

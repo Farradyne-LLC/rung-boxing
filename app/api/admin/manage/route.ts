@@ -7,6 +7,7 @@ import {editApplication} from '../../../lib/admin-edit';
 import {sql,transaction} from '../../../lib/postgres';
 export async function POST(req:Request){try{
  const user=await admin();const input=await body(req);const action=z.string().parse(input.action);let value:unknown={ok:true};
+ if(['MATCHUP','SESSION','SESSION_STATUS'].includes(action)||action==='MATCHUP_STATUS'&&input.data?.action!=='PUBLISH')throw new HttpError(409,'Use Session Desk to manage sessions, pair approval and attendance.');
  if(action==='EDIT_APPLICATION')return Response.json(await editApplication(input.data,user));
  if(action==='CONTENT_TERMS'){
  const d=z.object({id:z.uuid(),version:z.coerce.number().int().nonnegative(),content_terms:z.string().trim().min(30).max(5000)}).parse(input.data);

@@ -4,7 +4,7 @@ import {stripe} from '../../lib/stripe';
 export async function POST(req:Request){try{
  if(process.env.PAYMENTS_OPEN!=='true')throw new HttpError(503,'Content Pack checkout is not open yet. Your sparring place is unaffected.');
  await rate(req,'checkout',20);const {token,terms_version}=z.object({token:z.string(),accept_terms:z.literal(true),terms_version:z.number().int().nonnegative()}).parse(await body(req));const {c,m}=await invitation(token);
- if(c.status!=='CONFIRMED'||m.status!=='CONFIRMED')throw new HttpError(409,'Checkout opens after both fighters have confirmed.');
+ if(c.status!=='CONFIRMED'||m.status!=='CONFIRMED'||!m.organizer_confirmed_at)throw new HttpError(409,'Checkout opens after both fighters have confirmed.');
  if(!m.content_terms||m.content_terms.trim().length<30||terms_version!==m.content_terms_version)throw new HttpError(409,'Order details changed or are not ready. Refresh your invitation before checkout.');
  const client=stripe();const price=await client.prices.retrieve(env('STRIPE_CONTENT_PACK_PRICE_ID'));
  if(!price.active||price.currency!=='usd'||price.unit_amount!==9900||price.type!=='one_time')throw new HttpError(503,'Content Pack pricing is not configured correctly.');

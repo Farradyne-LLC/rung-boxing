@@ -8,6 +8,51 @@
   --line: #343432;
   color-scheme: dark;
 }
+
+/* Member platform: scoped to preserve the established landing page. */
+.pm-layout{max-width:1180px;padding-bottom:110px;overflow-wrap:anywhere}
+.pm-layout h1{font-size:clamp(42px,7vw,88px);line-height:1.05}
+.pm-layout h2{font-size:clamp(28px,4vw,42px);line-height:1.15;margin:14px 0}
+.pm-layout h3{font-size:26px;line-height:1.2}
+.pm-title,.pm-actions,.pm-identity{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.pm-title{justify-content:space-between}
+.pm-panel,.pm-empty,.pm-filters{border:1px solid var(--line);padding:24px;margin:20px 0;background:#141414;border-radius:4px;min-width:0}
+.pm-panel p,.pm-empty p{color:#c7c7be}
+.pm-panel small{display:block;color:#b6b6ad;font-size:12px}
+.pm-panel .pm-warning{color:#edbe78}
+.pm-empty{padding:36px 24px}
+.pm-narrow{max-width:560px}
+.pm-fields,.pm-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.pm-cards>.pm-panel{margin:0}
+.pm-layout label,.pm-modal label{display:block;font-size:14px;margin:10px 0}
+.pm-layout input:not([type=checkbox]),.pm-layout select,.pm-layout textarea,.pm-modal input:not([type=checkbox]),.pm-modal select,.pm-modal textarea{display:block;box-sizing:border-box;width:100%;min-width:0;min-height:48px;font-size:16px;padding:12px;background:#232323;color:#f4f2e7;border:1px solid #686862;border-radius:3px}
+.pm-layout input[type=checkbox],.pm-modal input[type=checkbox]{width:22px;height:22px;flex:0 0 22px;accent-color:var(--red);margin:0}
+.pm-layout .pm-check,.pm-modal .pm-check{display:flex;align-items:center;gap:12px;min-height:44px}
+.pm-layout fieldset{min-width:0;border:1px solid var(--line);margin:20px 0;padding:16px}
+.pm-chips{display:flex;gap:8px;flex-wrap:wrap}
+.pm-chips label{display:flex;align-items:center;gap:8px;padding:10px;border:1px solid #686862;min-height:44px}
+.pm-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0}
+.pm-stats strong{display:block;font-family:var(--font-display);font-size:28px;line-height:1.2}
+.pm-identity img,.pm-avatar{width:64px;height:64px;object-fit:cover;flex:0 0 64px;border-radius:4px}
+.pm-avatar{display:grid;place-items:center;background:#333;font-size:32px}
+.pm-identity h2{font-size:30px}
+.pm-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:24px 0}
+.pm-tabs button{min-height:44px;padding:10px 16px;border:1px solid #777;background:transparent;color:var(--bone)}
+.pm-tabs button[aria-pressed=true]{background:var(--bone);color:#111}
+.pm-feedback{position:sticky;top:94px;background:#151515;color:#fff;z-index:4;white-space:pre-wrap}
+.pm-feedback:empty{display:none}
+.pm-bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:20;background:#101010;border-top:1px solid #555;display:grid;grid-template-columns:repeat(4,1fr);padding:8px max(12px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));box-shadow:0 -5px 20px #0004}
+.pm-bottom-nav a{min-height:48px;display:grid;place-items:center;font-size:13px;font-weight:800}
+.pm-bottom-nav a:hover,.pm-bottom-nav a:focus-visible{background:#333}
+.pm-modal-backdrop{position:fixed;inset:0;z-index:100;background:#000b;display:flex;justify-content:center;align-items:center;padding:16px}
+.pm-modal{width:min(720px,100%);max-height:90dvh;overflow:auto;overscroll-behavior:contain;background:#151515;border:1px solid #555;padding:24px;padding-bottom:calc(24px + env(safe-area-inset-bottom));border-radius:6px}
+.pm-close{display:block;margin-left:auto;min-height:44px;padding:8px 16px;background:#333;color:white;border:1px solid #777}
+.pm-tape>div{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 0;border-bottom:1px solid #444}
+.pm-tape small{grid-column:1/-1;color:#bcbcaf;text-transform:uppercase;font-size:11px;letter-spacing:1px}
+.pm-tape span:last-child{text-align:right}
+.pm-layout .table-scroll button{min-width:44px;min-height:44px}
+.pm-layout .button,.pm-modal .button{min-height:48px;white-space:normal;text-align:center}
+@media(max-width:650px){.pm-fields,.pm-cards{grid-template-columns:1fr}.pm-panel,.pm-empty,.pm-filters{padding:18px}.pm-layout{padding-top:30px}.pm-modal-backdrop{padding:8px}.pm-modal{padding:18px}.pm-actions>.button{flex:1 1 150px}.pm-title>.button{padding:10px 16px}.pm-layout .pm-stats{grid-template-columns:1fr 1fr}}
 * {
   box-sizing: border-box;
 }

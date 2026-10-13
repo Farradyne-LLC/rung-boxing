@@ -11,7 +11,7 @@ export const applicationSchema = z.object({
  avatar_index:z.number().int().min(0).max(2).default(0),cover_index:z.number().int().min(0).max(2).nullable().default(null),
  request_id:z.uuid(), lead_token:z.string().regex(/^[a-f0-9]{64}$/).optional(), session_id:z.union([z.uuid(),z.literal('')]).default(''),
  first_name:text(80),last_name:z.string().trim().min(1,'Enter your last name.').max(80),display_name:z.string().trim().max(100).default(''),date_of_birth:text(10).refine(v=>ageFromDob(v)!==null,'Enter a valid date of birth.'),
- email:z.email().max(254).transform(v=>v.toLowerCase()),phone:text(40),instagram:instagramSchema,city:text(100),gym:z.string().trim().max(160).default(''),
+ email:z.email().max(254).transform(v=>v.toLowerCase()),phone:text(40),instagram:z.union([z.literal(''),instagramSchema]).default(''),city:text(100),gym:z.string().trim().max(160).default(''),
  height:z.coerce.number().min(36).max(100),current_weight:z.coerce.number().min(50).max(500),stance:z.enum(['Orthodox','Southpaw','Switch']),
  years_boxing:z.coerce.number().min(0).max(90),competition_experience:z.enum(['No fights','Amateur','Professional']),amateur_fights:z.coerce.number().int().min(0).max(1000),professional_fights:z.coerce.number().int().min(0).max(1000),
  sparring_experience:text(2000),skill_level:z.enum(['Beginner','Developing','Intermediate','Advanced','Competitive amateur','Professional']),
@@ -38,7 +38,7 @@ export const contactSchema=z.object({
  marketing_consent:z.boolean().default(false),website:z.literal('').default(''),
  source:z.object({utm_source:z.string().max(150).default(''),utm_medium:z.string().max(150).default(''),utm_campaign:z.string().max(150).default('')}).default({utm_source:'',utm_medium:'',utm_campaign:''}),
 });
-export const boxingSchema=z.object({instagram:instagramSchema,
+export const boxingSchema=z.object({instagram:z.union([z.literal(''),instagramSchema]).default(''),
  city:text(100),height:z.coerce.number().min(36).max(100),current_weight:z.coerce.number().min(50).max(500),stance:z.enum(['Orthodox','Southpaw','Switch']),years_boxing:z.coerce.number().min(0).max(90),
  skill_level:z.enum(['Beginner','Developing','Intermediate','Advanced','Competitive amateur','Professional']),
  sparring_experience:text(2000),preferred_intensity:z.enum(['Technical/light','Controlled/moderate','Competitive technical']),availability:text(1000),
