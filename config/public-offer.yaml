@@ -1,0 +1,13 @@
+# Server-only. Owner must supply and approve every value before prepayment opens.
+# Increment version whenever approved terms change. Never edit terms of a paid order.
+version: 1
+content_pack:
+  price_usd: 99
+  rounds_scope: ""
+  reel_length: ""
+  file_formats: ""
+  delivery_start: ""
+  delivery_window_days: 0
+  refund_if_no_session_days: 0
+  cancellation_terms: ""
+  non_delivery_remedy: ""

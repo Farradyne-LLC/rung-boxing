@@ -10,10 +10,10 @@ export async function POST(req:Request){
   if(event.livemode!==env('STRIPE_SECRET_KEY').startsWith('sk_live_'))throw new HttpError(400,'Payment mode mismatch.');
   if(['checkout.session.completed','checkout.session.async_payment_succeeded','checkout.session.async_payment_failed','checkout.session.expired'].includes(event.type)){
    const s=event.data.object as Stripe.Checkout.Session;
-   if(s.metadata?.product_type!=='CONTENT_PACK')return Response.json({received:true});
-   const order=result(await db().from('orders').select('*').eq('id',s.metadata.order_id).single());
-   if(s.metadata.fighter_id!==order.fighter_id||s.metadata.matchup_id!==order.matchup_id||s.client_reference_id!==order.id)throw new HttpError(400,'Payment metadata mismatch.');
-   if(s.metadata.attempt&&s.metadata.attempt!==String(order.attempt))return Response.json({received:true,ignored:'superseded_attempt'});
+   if(!['CONTENT_PACK','CONTENT_PACK_PREPAID','HIGHLIGHT_EDIT','PRIVATE_SHOOT'].includes(s.metadata?.product_type||''))return Response.json({received:true});
+   const order=result(await db().from('orders').select('*').eq('id',s.metadata!.order_id).single());
+   if(s.metadata?.product_type!==order.product_type||(s.metadata?.fighter_id||null)!==order.fighter_id||(s.metadata?.matchup_id||null)!==(order.product_type==='CONTENT_PACK'?order.matchup_id:null)||(s.metadata?.service_request_id||null)!==order.service_request_id||s.client_reference_id!==order.id)throw new HttpError(400,'Payment metadata mismatch.');
+   if(s.metadata?.attempt&&s.metadata.attempt!==String(order.attempt))return Response.json({received:true,ignored:'superseded_attempt'});
    const paid=s.payment_status==='paid';
    if(!paid&&['checkout.session.completed','checkout.session.async_payment_succeeded'].includes(event.type))return Response.json({received:true});
    result(await db().rpc('record_payment',{p_event:event.id,p_order:order.id,p_checkout:s.id,p_intent:typeof s.payment_intent==='string'?s.payment_intent:s.payment_intent?.id||null,p_state:paid?'PAID':'FAILED',p_amount:s.amount_total,p_currency:s.currency,p_refunded:0}));

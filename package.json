@@ -20,6 +20,7 @@
     "server-only": "^0.0.1",
     "sharp": "^0.35.5",
     "stripe": "^23.0.0",
+    "yaml": "^2.9.1",
     "zod": "^4.6.5"
   },
   "devDependencies": {
