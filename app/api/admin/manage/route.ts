@@ -1,3 +1,4 @@
+import {v5Admin} from '../../../lib/v5-admin';
 import {after} from 'next/server';
 import {z} from 'zod';
 import {admin,body,db,failure,hash,newToken,origin,result,HttpError} from '../../../lib/server';
@@ -8,6 +9,7 @@ import {sql,transaction} from '../../../lib/postgres';
 export async function POST(req:Request){try{
  const user=await admin();const input=await body(req);const action=z.string().parse(input.action);let value:unknown={ok:true};
  if(['MATCHUP','SESSION','SESSION_STATUS'].includes(action)||action==='MATCHUP_STATUS'&&input.data?.action!=='PUBLISH')throw new HttpError(409,'Use Session Desk to manage sessions, pair approval and attendance.');
+ if(['RETRY_EMAIL','CONTACTED','ATTACH_PREPAID','SERVICE_QUOTE'].includes(action)){const value=await v5Admin(action,input.data,user);after(flushNotifications);return Response.json(value);}
  if(action==='EDIT_APPLICATION')return Response.json(await editApplication(input.data,user));
  if(action==='CONTENT_TERMS'){
  const d=z.object({id:z.uuid(),version:z.coerce.number().int().nonnegative(),content_terms:z.string().trim().min(30).max(5000)}).parse(input.data);
@@ -15,7 +17,7 @@ export async function POST(req:Request){try{
  }
  if(action==='SERVICE_REQUEST'){
  const d=z.object({id:z.uuid(),version:z.coerce.number().int().nonnegative(),status:z.enum(['NEW','REVIEWING','NEEDS_MATERIAL','QUOTED','BOOKED','DELIVERED','DECLINED','CLOSED']),internal_notes:z.string().max(5000),response_notes:z.string().max(5000)}).parse(input.data);
- await transaction(async c=>{const old=(await c.query('SELECT * FROM service_requests WHERE id=$1 FOR UPDATE',[d.id])).rows[0];if(!old||old.version!==d.version)throw new HttpError(409,'Request changed. Reload before saving.');if(['NEEDS_MATERIAL','DECLINED'].includes(d.status)&&d.response_notes.trim().length<10)throw new HttpError(400,'Record the response or material needed before changing this status.');await c.query('UPDATE service_requests SET status=$2,internal_notes=$3,response_notes=$4,version=version+1,updated_at=now() WHERE id=$1',[d.id,d.status,d.internal_notes,d.response_notes]);await c.query('INSERT INTO audit_log(actor,actor_label,action,entity_id,changes) VALUES($1,$2,$3,$4,$5)',[user.id,user.email,'SERVICE_REQUEST',d.id,{before:{status:old.status,internal_notes:old.internal_notes,response_notes:old.response_notes},after:d}]);});return Response.json({ok:true});
+ await transaction(async c=>{const old=(await c.query('SELECT * FROM service_requests WHERE id=$1 FOR UPDATE',[d.id])).rows[0];if(!old||old.version!==d.version)throw new HttpError(409,'Request changed. Reload before saving.');if(old.status==='PAID'&&!['BOOKED','DELIVERED','CLOSED'].includes(d.status))throw new HttpError(409,'A paid request cannot return to an unpaid status.');if(['NEEDS_MATERIAL','DECLINED'].includes(d.status)&&d.response_notes.trim().length<10)throw new HttpError(400,'Record the response or material needed before changing this status.');await c.query('UPDATE service_requests SET status=$2,internal_notes=$3,response_notes=$4,version=version+1,updated_at=now() WHERE id=$1',[d.id,d.status,d.internal_notes,d.response_notes]);await c.query('INSERT INTO audit_log(actor,actor_label,action,entity_id,changes) VALUES($1,$2,$3,$4,$5)',[user.id,user.email,'SERVICE_REQUEST',d.id,{before:{status:old.status,internal_notes:old.internal_notes,response_notes:old.response_notes},after:d}]);});return Response.json({ok:true});
  }
  if(action==='SESSION')value=result(await db().from('sessions').insert(sessionSchema.parse(input.data)).select('id').single());
  else if(action==='MATCHUP'){
